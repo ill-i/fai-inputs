@@ -4,7 +4,7 @@
   <meta name="title">Archive of AGN spectral observations</meta>
   <meta name="description">The archive of AGN spectral observations is obtained on AZT-8 telescope at the Fesenkov Astrophysical Institute (FAI), Almaty, Kazakhstan.
 It represents the result of observations for abot 25 years - from 1970 to 1995.  All observations were carried out at AZT-8 (D = 700 mm, F[main]  = 2800 mm, F[Cassegrain] = 11000 mm) with a high-power spectrograph. In 1967-68, on the basis of the image intensifier (https://doi.org/10.1080/1055679031000084795a) developed and assembled the spectrograph of the original design in the workshops of the FAI.
-To use the spectra, please, download raw .fit file of required object, date and exposure. The open 'Calibration frames' in Related links and then use them to calibrate object spectra frames. For more information about calibration process please visit https://github.com/ill-i/Spectra-Reduction. 
+To use the spectra, please, download raw .fit file of required object, date and exposure. The open 'Calibration frames' in Related links and then use them to calibrate object spectra frames. For more information about calibration process please visit https://github.com/ill-i/Spectra-Reduction.
   </meta>
   <meta name="subject">active-galactic-nuclei</meta>
   <meta name="subject">history-of-astronomy</meta>
@@ -63,7 +63,7 @@ To use the spectra, please, download raw .fit file of required object, date and 
       tablehead="Objs."
       description="Name of object from the observation log."
     verbLevel="3"/>-->
-    
+
     <column name="target_ra"
       unit="deg" ucd="pos.eq.ra;meta.main"
       tablehead="Target RA"
@@ -94,16 +94,6 @@ To use the spectra, please, download raw .fit file of required object, date and 
     <fitsProdGrammar qnd="True">
       <rowfilter procDef="//products#define">
         <bind key="table">"\schema.raw_data"</bind>
-        <bind key="path">\fullDLURL{sdl}</bind>
-        <!-- the next item should be estimated (the stuff will
-          be generated on the fly).  Make it something like
-          10000+20*number of data points or so. -->
-        <bind key="fsize">404000000</bind>
-        <bind key="datalink">"\rdId#sdl"</bind>
-        <bind key="mime">"application/fit"</bind>
-        
-        <!--<bind key="preview">\standardPreviewPath</bind>-->
-        <!--<bind key="preview_mime">"image/png"</bind>-->
       </rowfilter>
     </fitsProdGrammar>
 
@@ -122,8 +112,8 @@ To use the spectra, please, download raw .fit file of required object, date and 
         <map key="ssa_specend">getWCSAxis(@header_, 1).pixToPhys(getWCSAxis(@header_, 1).axisLength)*1e-10</map>
         <map key="ssa_length">getWCSAxis(@header_, 1).axisLength</map>
 
-        <map key="target_ra" source="OBJCTRA" nullExcs="KeyError"/>
-        <map key="target_dec" source="OBJCTDEC" nullExcs="KeyError"/>
+        <map key="target_ra"  nullExcs="KeyError">@RA_DEG</map>
+        <map key="target_dec" nullExcs="KeyError">@DEC_DEG</map>
 
         <!--<var name="specAx">getWCSAxis(@header_, 1)</var>
         <map key="ssa_specstart">specAx.pixToPhys(1)*1e-10</map>
@@ -250,11 +240,11 @@ To use the spectra, please, download raw .fit file of required object, date and 
         # Using astropy to read the FITS file
         from astropy.io import fits
         with fits.open(sourcePath) as hdulist:
-            # Assuming the data you want is in the primary HDU. 
+            # Assuming the data you want is in the primary HDU.
             # Adjust as needed.
             data = hdulist[0].data
 
-        # If data is 2D (an image), you'll need to decide how you want 
+        # If data is 2D (an image), you'll need to decide how you want
         # to handle it. This example simply returns the raw 2D data array.
         for row in data:
             yield {"image_data": row}
@@ -306,7 +296,8 @@ To use the spectra, please, download raw .fit file of required object, date and 
     </dbCore>
 
     <outputTable>
-      <autoCols> ssa_targname, target_ra, target_dec,
+      <autoCols> ssa_targname,
+                 target_ra, target_dec,
                 accref, ssa_dateObs </autoCols>
       <!--<FEED source="//ssap#atomicCoords"/>-->
     </outputTable>
