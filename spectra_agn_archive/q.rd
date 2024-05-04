@@ -41,7 +41,8 @@ To use the spectra, please, download raw .fit file of required object, date and 
 
     <FEED source="//scs#splitPosIndex"
       long="degrees(long(ssa_location))"
-      lat="degrees(lat(ssa_location))"/>
+      lat="degrees(lat(ssa_location))"
+      columns="ssa_location"/>
 
     <!-- the datalink column is mainly useful if you have a form-based
       service.  You can dump this (and the mapping rule filling it below)
@@ -75,7 +76,9 @@ To use the spectra, please, download raw .fit file of required object, date and 
       description="Declination of object from observation log."
       verbLevel="1"/>
 
-    <!--%add further custom columns if necessary here%-->
+    <column original="ssa_dateObs"
+      tablehead="Obs. date"
+      description="The date of observation from observational log. (Y-M-D .. Y-M-D)"/>
   </table>
 
   <!-- if you have data that is continually added to, consider using
@@ -104,8 +107,8 @@ To use the spectra, please, download raw .fit file of required object, date and 
         <!-- the following maps assume the column list in the LOOP
           above.  If you changed things there, you'll have to adapt
           things here, too -->
-        <!--<map key="dateObs" source="DATE_OBS" nullExcs="KeyError"/>-->
         <map key="ssa_dateObs">dateTimeToMJD(parseTimestamp(@DATE_OBS))</map>
+        <!--<map key="ssa_dateObs">parseTimestamp(@DATE_OBS)</map> -->
         <map key="ssa_dstitle">@FILENAME</map> <!--"{} {}".format(%make a string halfway human-readable and halfway unique for each data set%)</map>-->
         <map key="ssa_targname">@OBJECT</map>
         <map key="ssa_specstart">getWCSAxis(@header_, 1).pixToPhys(1)*1e-10</map>
@@ -283,16 +286,30 @@ To use the spectra, please, download raw .fit file of required object, date and 
 
     <dbCore queriedTable="data">
       <condDesc buildFrom="ssa_location"/>
-      <condDesc buildFrom="ssa_dateObs"/>
-      <!-- add further condDescs in this pattern; if you have useful target
-      names, you'll probably want to index them and say:
+      <!--<condDesc>
+        <inputKey name="ssa_dateObs"
+                  tablehead="Obs. date"
+                  description="The date of observation from observational log. (Y-M-D .. Y-M-D)"/>
+      </condDesc>-->
 
-      <condDesc>
-        <inputKey original="data.ssa_targname" tablehead="Standard Stars">
-          <values fromdb="ssa_targname from theossa.data
-            order by ssa_targname"/>
+      <!--<condDesc buildFrom="ssa_dateObs">
+        <inputKey name="ssa_dateObs"
+            tablehead="Observation date"
+            description="Enter the observation date range (Y-M-D .. Y-M-D)">
         </inputKey>
-      </condDesc> -->
+      </condDesc>-->
+
+    <condDesc buildFrom="ssa_dateObs"/>
+
+     <condDesc>
+        <inputKey name="ssa_targname" type="text"
+          tablehead="Target Object"
+          description="Object being observed, Simbad-resolvable form"
+          ucd="meta.name">
+          <values fromdb="ssa_targname from spectra_agn_archive.data ORDER BY ssa_targname"/>
+        </inputKey>
+      </condDesc>
+
     </dbCore>
 
     <outputTable>
