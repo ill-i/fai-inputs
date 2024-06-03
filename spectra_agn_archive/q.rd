@@ -39,10 +39,15 @@ To use the spectra, please, download raw .fit file of required object, date and 
       and s_dec are fast; again, remove this if you don't have useful
       positions -->
 
-    <FEED source="//scs#splitPosIndex"
+    <!--<FEED source="//scs#splitPosIndex"
       long="degrees(long(ssa_location))"
       lat="degrees(lat(ssa_location))"
-      columns="ssa_location"/>
+      columns="ssa_location"/>-->
+
+    <FEED source="//scs#splitPosIndex"
+      long="degrees(target_ra)"
+      lat="degrees(target_dec)"
+      columns="target_ra, target_dec"/>
 
     <!-- the datalink column is mainly useful if you have a form-based
       service.  You can dump this (and the mapping rule filling it below)
@@ -330,6 +335,9 @@ To use the spectra, please, download raw .fit file of required object, date and 
     <ssapCore queriedTable="data">
      <!-- <property key="previews">auto%delete this line if you have no previews; else delete just this.%</property>-->
       <FEED source="//ssap#hcd_condDescs"/>
+      <condDesc>
+        <inputKey name="POS" ucd="pos.eq" xtype="adql:POINT"/>
+      </condDesc>
     </ssapCore>
   </service>
 
