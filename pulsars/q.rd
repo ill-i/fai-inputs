@@ -4,13 +4,14 @@
     <meta name="title">Galactic X-ray pulsars</meta>
     <meta name="creationDate">2024-11-25T12:00:00Z</meta>
     <meta name="description" format="plain">
-        Catalog of Galactic population of persistent and transient X-ray pulsars in HMXB systems
+    Catalog of Galactic population of persistent and transient X-ray
+    pulsars in HMXB systems.  TODO: Who did it how?
     </meta>
     <meta name="subject">pulsars</meta>
     <meta name="type">service</meta>
 
     <!-- Table Definition -->
-    <table id="combined_table">
+    <table id="main" onDisk="True">
         <column name="Number" type="integer" description="Catalog number of the object" />
         <column name="Name" type="text" description="Name of the object" />
         <column name="RAh" type="integer" description="Right Ascension hour (J2000)" />
@@ -22,29 +23,48 @@
         <column name="DEs" type="double precision" description="Declination arcsecond (J2000)" />
         <column name="Ps" type="double precision" description="Spin period (seconds)" />
         <column name="e_Ps" type="double precision" description="Error in spin period (seconds)" />
-        <column name="PsYr" type="integer" description="Year of spin period measurement" />
+        <column name="PsYr" type="integer" 
+            description="Year of spin period measurement">
+            <values nullLiteral="-1"/>
+        </column>
         <column name="r_Ps" type="text" description="Reference for spin period" />
         <column name="PLocSpDown" type="double precision" description="Local spin-down period (seconds)" />
         <column name="e_PLocSpDown" type="double precision" description="Error in local spin-down period" />
-        <column name="PLocSpDownStart" type="integer" description="Start date of local spin-down period measurement (YYYYMMDD)" />
-        <column name="PLocSpDownStop" type="integer" description="End date of local spin-down period measurement (YYYYMMDD)" />
+        <column name="PLocSpDownStart" type="double precision" 
+            unit="d"
+            description="Start date of local spin-down period measurement in MJD" />
+        <column name="PLocSpDownStop" type="double precision" 
+            unit="d"
+            description="End date of local spin-down period measurement in MJD" />
         <column name="r_PLocSpDown" type="text" description="Reference for local spin-down period" />
         <column name="PLocSpUpsign" type="text" description="Sign of local spin-up period" />
         <column name="PLocSpUp" type="double precision" description="Local spin-up period (seconds)" />
         <column name="e_PLocSpUp" type="double precision" description="Error in local spin-up period" />
-        <column name="PLocSpUpStart" type="integer" description="Start date of local spin-up period measurement (YYYYMMDD)" />
-        <column name="PLocSpUpStop" type="integer" description="End date of local spin-up period measurement (YYYYMMDD)" />
+        <column name="PLocSpUpStart" type="double precision" 
+            unit="d"
+            description="Start date of local spin-up period measurement as MJD" />
+        <column name="PLocSpUpStop" type="double precision" 
+            unit="d"
+            description="End date of local spin-up period measurement in MJD" />
         <column name="r_PLocSpUp" type="text" description="Reference for local spin-up period" />
         <column name="PGloSpDown" type="double precision" description="Global spin-down period (seconds)" />
         <column name="e_PGloSpDown" type="double precision" description="Error in global spin-down period" />
-        <column name="PGloSpDownStart" type="integer" description="Start date of global spin-down period measurement (YYYYMMDD)" />
-        <column name="PGloSpDownStop" type="integer" description="End date of global spin-down period measurement (YYYYMMDD)" />
+        <column name="PGloSpDownStart" type="double precision" 
+            unit="d"
+            description="Start date of global spin-down period measurement in MJD" />
+        <column name="PGloSpDownStop" type="double precision" 
+            unit="d"
+            description="End date of global spin-down period measurement in MJD" />
         <column name="r_PGloSpDown" type="text" description="Reference for global spin-down period" />
         <column name="PGloSpUpsign" type="text" description="Sign of global spin-up period" />
         <column name="PGloSpUp" type="double precision" description="Global spin-up period (seconds)" />
         <column name="e_PGloSpUp" type="double precision" description="Error in global spin-up period" />
-        <column name="PGloSpUpStart" type="integer" description="Start date of global spin-up period measurement (YYYYMMDD)" />
-        <column name="PGloSpUpStop" type="integer" description="End date of global spin-up period measurement (YYYYMMDD)" />
+        <column name="PGloSpUpStart" type="double precision" 
+            unit="d"
+            description="Start date of global spin-up period measurement in MJD" />
+        <column name="PGloSpUpStop" type="double precision" 
+            unit="d"
+            description="End date of global spin-up period measurement in MJD" />
         <column name="r_PGloSpUp" type="text" description="Reference for global spin-up period" />
         <column name="POrbsign" type="text" description="Sign of orbital period" />
         <column name="POrbLower" type="double precision" description="Lower limit of orbital period (days)" />
@@ -87,15 +107,45 @@
         <column name="ExtBminusV" type="double precision" description="Color excess E(B−V)" />
         <column name="e_ExtBminusV" type="double precision" description="Error in color excess E(B−V)" />
         <column name="r_ExtBminusV" type="text" description="Reference for color excess E(B−V)" />
-        <column name="persistent" type="boolean" description="Persistent flag (1 for True, 0 for False)" />
+        <column name="persistent" type="smallint" description="Persistent flag (1 for True, 0 for False)" />
     </table>
+
+    <data id="import">
+        <sources pattern="data/data.db"/>
+        <embeddedGrammar> <!-- probably wrong: better use CSV or FITS binary
+            or whatever.  But for demo: -->
+            <iterator>
+                <setup imports="sqlite3">
+                    <code>
+                        def dict_factory(cursor, row):
+                            fields = [column[0] 
+                                for column in cursor.description]
+                            return {key: value 
+                                for key, value in zip(fields, row)}
+                    </code>
+                </setup>
+                <code>
+                    conn = sqlite3.connect(self.sourceToken)
+                    conn.row_factory = dict_factory
+                    for row in conn.execute("SELECT * FROM combined_table"):
+                        yield row
+                </code>
+            </iterator>
+        </embeddedGrammar>
+        <make table="main">
+            <rowmaker id="build_main" idmaps="*">
+            </rowmaker>
+        </make>
+    </data>
 
     <!-- Service Definition -->
     <service id="combined_data_service" allowed="form">
-        <meta name="shortName">combined_data</meta>
-        <customCore module="res/combined_core"/>
+        <meta name="shortName">fai x-ray pulsars</meta>
+        <dbCore queriedTable="main"/>
         <!-- Publishing Information -->
         <publish sets="local,ivo_managed" render="form"/>
     </service>
 </resource>
 
+<!-- vim:ai:sta:ts=4:et:sw=4 
+-->
