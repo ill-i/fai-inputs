@@ -11,18 +11,29 @@
     <meta name="type">service</meta>
 
     <!-- Table Definition -->
-    <table id="main" onDisk="True">
-        <column name="Number" type="integer" description="Catalog number of the object" />
+    <table id="main" onDisk="True" adql="True">
+        <column name="Number" type="integer" required="True"
+            ucd="meta.id;meta.main"
+            description="Catalog number of the object"
+            verbLevel="1"/>
         <column name="Name" type="text" description="Name of the object" />
-        <column name="RAh" type="integer" description="Right Ascension hour (J2000)" />
-        <column name="RAm" type="integer" description="Right Ascension minute (J2000)" />
-        <column name="RAs" type="double precision" description="Right Ascension second (J2000)" />
-        <column name="DE_sign" type="text" description="Declination sign (J2000)" />
-        <column name="DEd" type="integer" description="Declination degree (J2000)" />
-        <column name="DEm" type="integer" description="Declination arcminute (J2000)" />
-        <column name="DEs" type="double precision" description="Declination arcsecond (J2000)" />
-        <column name="Ps" type="double precision" description="Spin period (seconds)" />
-        <column name="e_Ps" type="double precision" description="Error in spin period (seconds)" />
+        <column name="ra" type="double precision"
+            unit="deg" ucd="pos.eq.ra;meta.main"
+            tablehead="RA"
+            description="The pulsar's ICRS right ascension form XY?"
+            verbLevel="1" displayHint="sf=7"/>
+        <column name="dec" type="double precision"
+            unit="deg" ucd="pos.eq.dec;meta.main"
+            tablehead="Dec"
+            description="The pulsar's ICRS right ascension form XY?"
+            verbLevel="1" displayHint="type=dms,sf=1"/>
+
+        <column name="Ps" type="double precision" 
+            unit="s"
+            description="Spin period" />
+        <column name="e_Ps" type="double precision" 
+            unit="s"
+            description="Error in spin period" />
         <column name="PsYr" type="integer" 
             description="Year of spin period measurement">
             <values nullLiteral="-1"/>
@@ -107,7 +118,8 @@
         <column name="ExtBminusV" type="double precision" description="Color excess E(B−V)" />
         <column name="e_ExtBminusV" type="double precision" description="Error in color excess E(B−V)" />
         <column name="r_ExtBminusV" type="text" description="Reference for color excess E(B−V)" />
-        <column name="persistent" type="smallint" description="Persistent flag (1 for True, 0 for False)" />
+        <column name="persistent" type="smallint" required="True"
+            description="Persistent flag (1 for True, 0 for False)" />
     </table>
 
     <data id="import">
@@ -134,9 +146,17 @@
         </embeddedGrammar>
         <make table="main">
             <rowmaker id="build_main" idmaps="*">
+                <map key="ra">hmsToDeg(
+                    "{}:{}:{}".format(@RAh, @RAm, @RAs), sepChar=":")</map>
+                <map key="dec">dmsToDeg(
+                    "{}{}:{}:{}".format(@DE_sign, @DEd, @DEm, @DEs), sepChar=":")</map>
             </rowmaker>
         </make>
     </data>
+
+    <coverage>
+        <updater spaceTable="main"/>
+    </coverage>
 
     <!-- Service Definition -->
     <service id="combined_data_service" allowed="form">
