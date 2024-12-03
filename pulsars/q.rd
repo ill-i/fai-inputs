@@ -11,7 +11,7 @@
     <meta name="type">service</meta>
 
     <!-- Table Definition -->
-    <table id="main" onDisk="True" adql="True">
+    <table id="main" onDisk="True" adql="True" mixin="//scs#pgs-pos-index">
         <column name="Number" type="integer" required="True"
             ucd="meta.id;meta.main"
             description="Catalog number of the object"
@@ -159,9 +159,12 @@
     </coverage>
 
     <!-- Service Definition -->
-    <service id="combined_data_service" allowed="form">
-        <meta name="shortName">fai x-ray pulsars</meta>
-        <dbCore queriedTable="main"/>
+    <service id="scs" allowed="form,scs.xml">
+        <meta name="shortName">FAI x-ray pulsars</meta>
+        <scsCore queriedTable="main">
+            <FEED source="//scs#coreDescs"/>
+            <condDesc buildFrom="Ps"/>
+        </scsCore>
         <!-- Publishing Information -->
         <publish sets="local,ivo_managed" render="form"/>
     </service>
