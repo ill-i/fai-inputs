@@ -16,11 +16,6 @@
     </meta>
     <meta name="subject">pulsars</meta>
     <meta name="type">service</meta>
-    <meta name="reference">
-        Kim, V., Izmailova, I., Aimuratov, Y. (2023). Catalog of the Galactic Population of
-        X-Ray Pulsars in High-Mass X-Ray Binary Systems. The Astrophysical Journal
-        Supplement Series, 268, 21. DOI: <a href="https://doi.org/10.3847/1538-4365/ace68f">10.3847/1538-4365/ace68f</a>.
-    </meta>
     <meta name="bibcode" format="plain">2023ApJS..268...21K</meta>
     <!-- Table Definition -->
     <table id="main" onDisk="True" adql="True" mixin="//scs#pgs-pos-index">
@@ -45,346 +40,347 @@
             verbLevel="1" displayHint="type=dms,sf=1"/>
         <column name="Ps" type="double precision"
             unit="s" ucd="time.period.rotation"
-            tablehead="Spin Period"
+            tablehead="P_s"
             description="Spin period of the pulsar"
             verbLevel="1" />
         <column name="e_Ps" type="double precision"
             unit="s" ucd="stat.error;time.period.rotation"
-            tablehead="Error in Spin Period"
+            tablehead="e_P_s"
             description="Error in spin period"
-            verbLevel="2" />
-        <column name="PsYr" type="integer" 
+            verbLevel="15" />
+        <column name="PsYr" type="integer"
+       	    unit="yr"	
             ucd="time.epoch"
-            tablehead="Spin Period Year"
+            tablehead="P_s_yr"
             description="Year of spin period measurement"
             verbLevel="3" >
             <values nullLiteral="-1"/>
         </column>
         <column name="r_Ps" type="text"
             ucd="meta.ref"
-            tablehead="Reference for Spin Period"
+            tablehead="r_P_S"
             description="Reference for spin period"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="PLocSpDown" type="double precision"
             unit="s" ucd="time.period"
-            tablehead="Local Spin-Down Period"
+            tablehead="loc_P_s_down"
             description="Local spin-down period"
             verbLevel="3" />
         <column name="e_PLocSpDown" type="double precision"
             unit="s" ucd="stat.error;time.period"
-            tablehead="Error in Local Spin-Down Period"
+            tablehead="e_loc_P_s_down"
             description="Error in local spin-down period"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="PLocSpDownStart" type="double precision"
             unit="d" ucd="time.start;obs"
-            tablehead="Spin-Down Start Date"
+            tablehead="loc_P_s_down_start"
             description="Start date of local spin-down period measurement in MJD"
             verbLevel="3" />
         <column name="PLocSpDownStop" type="double precision"
             unit="d" ucd="time.stop;obs"
-            tablehead="Spin-Down End Date"
+            tablehead="loc_P_s_down_stop"
             description="End date of local spin-down period measurement in MJD"
             verbLevel="3" />
         <column name="r_PLocSpDown" type="text"
             ucd="meta.ref"
-            tablehead="Spin-Down Reference"
+            tablehead="r_loc_P_s_down"
             description="Reference for local spin-down period"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="PLocSpUpsign" type="text"
             ucd="meta.code"
-            tablehead="Local Spin-Up Sign"
+            tablehead="sign_loc_P_s_up"
             description="Sign of local spin-up period"
             verbLevel="3" />
         <column name="PLocSpUp" type="double precision"
             unit="s" ucd="time.period"
-            tablehead="Local Spin-Up Period"
+            tablehead="loc_P_s_up"
             description="Local spin-up period"
             verbLevel="3" />
         <column name="e_PLocSpUp" type="double precision"
             unit="s" ucd="stat.error;time.period"
-            tablehead="Error in Local Spin-Up Period"
+            tablehead="e_loc_P_s_up"
             description="Error in local spin-up period"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="PLocSpUpStart" type="double precision"
             unit="d" ucd="time.start;obs"
-            tablehead="Spin-Up Start Date"
+            tablehead="loc_P_s_up_start"
             description="Start date of local spin-up period measurement in MJD"
             verbLevel="3" />
         <column name="PLocSpUpStop" type="double precision"
             unit="d" ucd="time.stop;obs"
-            tablehead="Spin-Up End Date"
+            tablehead="loc_P_s_up_stop"
             description="End date of local spin-up period measurement in MJD"
             verbLevel="3" />
         <column name="r_PLocSpUp" type="text"
             ucd="meta.ref"
-            tablehead="Spin-Up Reference"
+            tablehead="r_loc_P_s_up"
             description="Reference for local spin-up period"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="PGloSpDown" type="double precision"
             unit="s" ucd="time.period"
-            tablehead="Global Spin-Down Period"
+            tablehead="glo_P_s_down"
             description="Global spin-down period"
             verbLevel="3" />
         <column name="e_PGloSpDown" type="double precision"
             unit="s" ucd="stat.error;time.period"
-            tablehead="Error in Global Spin-Down Period"
+            tablehead="e_glo_P_s_down"
             description="Error in global spin-down period"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="PGloSpDownStart" type="double precision"
             unit="d" ucd="time.start;obs"
-            tablehead="Global Spin-Down Start Date"
+            tablehead="glo_P_s_down_start"
             description="Start date of global spin-down period measurement in MJD"
             verbLevel="3" />
         <column name="PGloSpDownStop" type="double precision"
             unit="d" ucd="time.stop;obs"
-            tablehead="Global Spin-Down End Date"
+            tablehead="glo_P_s_down_stop"
             description="End date of global spin-down period measurement in MJD"
             verbLevel="3" />
         <column name="r_PGloSpDown" type="text"
             ucd="meta.ref"
-            tablehead="Global Spin-Down Reference"
+            tablehead="r_glo_P_s_down"
             description="Reference for global spin-down period"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="PGloSpUpsign" type="text"
             ucd="meta.code"
-            tablehead="Global Spin-Up Sign"
+            tablehead="sign_glo_P_s_up"
             description="Sign of global spin-up period"
             verbLevel="3" />
         <column name="PGloSpUp" type="double precision"
             unit="s" ucd="time.period"
-            tablehead="Global Spin-Up Period"
+            tablehead="glo_P_s_up"
             description="Global spin-up period in seconds"
             verbLevel="3" />
         <column name="e_PGloSpUp" type="double precision"
             unit="s" ucd="stat.error;time.period"
-            tablehead="Error in Global Spin-Up Period"
+            tablehead="e_glo_P_s_up"
             description="Error in global spin-up period"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="PGloSpUpStart" type="double precision"
             unit="d" ucd="time.start;obs"
-            tablehead="Global Spin-Up Start Date"
+            tablehead="glo_P_s_up_start"
             description="Start date of global spin-up period measurement in MJD"
             verbLevel="3" />
         <column name="PGloSpUpStop" type="double precision"
             unit="d" ucd="time.stop;obs"
-            tablehead="Global Spin-Up End Date"
+            tablehead="glo_P_s_up_stop"
             description="End date of global spin-up period measurement in MJD"
             verbLevel="3" />
         <column name="r_PGloSpUp" type="text"
             ucd="meta.ref"
-            tablehead="Global Spin-Up Reference"
+            tablehead="r_glo_P_s_up"
             description="Reference for global spin-up period"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="POrbsign" type="text"
             ucd="meta.code"
-            tablehead="Orbital Period Sign"
+            tablehead="sign_P_orb"
             description="Sign of orbital period"
             verbLevel="3" />
         <column name="POrbLower" type="double precision"
             unit="d" ucd="time.period"
-            tablehead="Lower Orbital Period"
+            tablehead="P_orb_lower"
             description="Lower limit of orbital period"
             verbLevel="3" />
         <column name="POrbUpper" type="double precision"
             unit="d" ucd="time.period"
-            tablehead="Upper Orbital Period"
+            tablehead="P_orb_upper"
             description="Upper limit of orbital period"
             verbLevel="3" />
         <column name="POrbErr" type="double precision"
             unit="d" ucd="stat.error;time.period"
-            tablehead="Error in Orbital Period"
+            tablehead="e_P_orb"
             description="Error in orbital period"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="POrbRef" type="text"
             ucd="meta.ref"
-            tablehead="Orbital Period Reference"
+            tablehead="r_P_orb"
             description="Reference for orbital period"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="LXLower" type="double precision"
             unit="erg/s" ucd="phys.luminosity;em.x-ray"
-            tablehead="Lower X-Ray Luminosity"
+            tablehead="L_x_lower"
             description="Lower limit of X-ray luminosity"
             verbLevel="3" />
         <column name="LXUpper" type="double precision"
             unit="erg/s" ucd="phys.luminosity;em.x-ray"
-            tablehead="Upper X-Ray Luminosity"
+            tablehead="L_x_upper"
             description="Upper limit of X-ray luminosity"
             verbLevel="3" />
         <column name="LXRange" type="text"
             ucd="meta.code"
-            tablehead="X-Ray Luminosity Range"
+            tablehead="L_x_range"
             description="Range of X-ray luminosity"
             verbLevel="3" />
         <column name="LXRef" type="text"
             ucd="meta.ref"
-            tablehead="X-Ray Luminosity Reference"
+            tablehead="r_L_x"
             description="Reference for X-ray luminosity"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="Bsign" type="text"
             ucd="meta.code"
-            tablehead="Magnetic Field Sign"
+            tablehead="sign_B"
             description="Sign of magnetic field strength"
             verbLevel="3" />
         <column name="BLower" type="double precision"
             unit="Gauss" ucd="phys.magfield"
-            tablehead="Lower Magnetic Field"
+            tablehead="B_lower"
             description="Lower limit of magnetic field strength in Gauss"
             verbLevel="3" />
         <column name="BUpper" type="double precision"
             unit="Gauss" ucd="phys.magfield"
-            tablehead="Upper Magnetic Field"
+            tablehead="B_upper"
             description="Upper limit of magnetic field strength in Gauss"
             verbLevel="3" />
         <column name="BErr" type="double precision"
             unit="Gauss" ucd="stat.error;phys.magfield"
-            tablehead="Magnetic Field Error"
+            tablehead="e_B"
             description="Error in magnetic field strength in Gauss"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="BRef" type="text"
             ucd="meta.ref"
-            tablehead="Magnetic Field Reference"
+            tablehead="r_B"
             description="Reference for magnetic field strength"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="Distsign" type="text"
             ucd="meta.code"
-            tablehead="Distance Sign"
+            tablehead="sign_dist"
             description="Sign of distance measurement"
             verbLevel="3" />
         <column name="DistLower" type="double precision"
             unit="pc" ucd="pos.distance;stat.min"
-            tablehead="Lower Distance Limit"
+            tablehead="dist_lower"
             description="Lower limit of distance in parsecs"
             verbLevel="3" />
         <column name="DistUpper" type="double precision"
             unit="pc" ucd="pos.distance;stat.max"
-            tablehead="Upper Distance Limit"
+            tablehead="dist_upper"
             description="Upper limit of distance in parsecs"
             verbLevel="3" />
         <column name="DistError" type="double precision"
             unit="pc" ucd="stat.error;pos.distance"
-            tablehead="Distance Error"
+            tablehead="e_dist"
             description="Error in distance measurement in parsecs"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="DistRef" type="text"
             ucd="meta.ref"
-            tablehead="Distance Reference"
+            tablehead="r_dist"
             description="Reference for distance measurement"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="CompName" type="text"
             ucd="meta.id;src"
-            tablehead="Companion Name"
+            tablehead="comp_name"
             description="Name of the companion object"
             verbLevel="3" />
         <column name="CompNameClass" type="text"
             ucd="src.class"
-            tablehead="Companion Classification"
+            tablehead="comp_name_class"
             description="Classification of the companion object"
             verbLevel="3" />
         <column name="CompNameRef" type="text"
             ucd="meta.ref"
-            tablehead="Companion Reference"
+            tablehead="r_comp_name"
             description="Reference for companion object name"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="CompBmag" type="double precision"
             unit="mag" ucd="phot.mag;em.opt.b"
-            tablehead="Companion B-band Magnitude"
+            tablehead="comp_B_mag"
             description="Companion B-band magnitude"
             verbLevel="3" />
         <column name="e_CompBmag" type="double precision"
             unit="mag" ucd="stat.error;phot.mag"
-            tablehead="Error in Companion B-band Magnitude"
+            tablehead="e_comp_B_mag"
             description="Error in companion B-band magnitude"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="CompVmag" type="double precision"
             unit="mag" ucd="phot.mag;em.opt.v"
-            tablehead="Companion V-band Magnitude"
+            tablehead="comp_V_mag"
             description="Companion V-band magnitude"
             verbLevel="3" />
         <column name="e_CompVmag" type="double precision"
             unit="mag" ucd="stat.error;phot.mag"
-            tablehead="Error in Companion V-band Magnitude"
+            tablehead="e_comp_V_mag"
             description="Error in companion V-band magnitude"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="CompRmag" type="double precision"
             unit="mag" ucd="phot.mag;em.opt.r"
-            tablehead="Companion R-band Magnitude"
+            tablehead="comp_R_mag"
             description="Companion R-band magnitude"
             verbLevel="3" />
         <column name="e_CompRmag" type="double precision"
             unit="mag" ucd="stat.error;phot.mag"
-            tablehead="Error in Companion R-band Magnitude"
+            tablehead="e_comp_R_mag"
             description="Error in companion R-band magnitude"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="CompImag" type="double precision"
             unit="mag" ucd="phot.mag;em.opt.i"
-            tablehead="Companion I-band Magnitude"
+            tablehead="comp_I_mag"
             description="Companion I-band magnitude"
             verbLevel="3" />
         <column name="e_CompImag" type="double precision"
             unit="mag" ucd="stat.error;phot.mag"
-            tablehead="Error in Companion I-band Magnitude"
+            tablehead="e_comp_I_mag"
             description="Error in companion I-band magnitude"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="CompBVRImagRef" type="text"
             ucd="meta.ref"
-            tablehead="Companion BVR I Magnitude Reference"
+            tablehead="r_comp_BVRI_mag"
             description="Reference for companion B, V, R, I magnitudes"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="CompJmag" type="double precision"
             unit="mag" ucd="phot.mag;em.ir.j"
-            tablehead="Companion J-band Magnitude"
+            tablehead="comp_J_mag"
             description="Companion J-band magnitude"
             verbLevel="3" />
         <column name="e_CompJmag" type="double precision"
             unit="mag" ucd="stat.error;phot.mag"
-            tablehead="Error in Companion J-band Magnitude"
+            tablehead="e_comp_J_mag"
             description="Error in companion J-band magnitude"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="CompHmag" type="double precision"
             unit="mag" ucd="phot.mag;em.ir.h"
-            tablehead="Companion H-band Magnitude"
+            tablehead="comp_H_mag"
             description="Companion H-band magnitude"
             verbLevel="3" />
         <column name="e_CompHmag" type="double precision"
             unit="mag" ucd="stat.error;phot.mag"
-            tablehead="Error in Companion H-band Magnitude"
+            tablehead="e_comp_H_mag"
             description="Error in companion H-band magnitude"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="CompKmag" type="double precision"
             unit="mag" ucd="phot.mag;em.ir.k"
-            tablehead="Companion K-band Magnitude"
+            tablehead="comp_K_mag"
             description="Companion K-band magnitude"
             verbLevel="3" />
         <column name="e_CompKmag" type="double precision"
             unit="mag" ucd="stat.error;phot.mag"
-            tablehead="Error in Companion K-band Magnitude"
+            tablehead="e_comp_K_mag"
             description="Error in companion K-band magnitude"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="CompJHKmagRef" type="text"
             ucd="meta.ref"
-            tablehead="Companion JHK Magnitude Reference"
+            tablehead="r_comp_JHK_mag"
             description="Reference for companion J, H, K magnitudes"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="ExtBminusV" type="double precision"
             unit="mag" ucd="phys.colorIndex"
-            tablehead="Color Excess E(B−V)"
+            tablehead="ext_B-V"
             description="Color excess E(B−V)"
             verbLevel="3" />
         <column name="e_ExtBminusV" type="double precision"
             unit="mag" ucd="stat.error;phys.colorIndex"
-            tablehead="Error in Color Excess E(B−V)"
+            tablehead="e_ext_B-V"
             description="Error in color excess E(B−V)"
-            verbLevel="4" />
+            verbLevel="15" />
         <column name="r_ExtBminusV" type="text"
             ucd="meta.ref"
-            tablehead="Color Excess Reference"
+            tablehead="r_ext_B-V"
             description="Reference for color excess E(B−V)"
-            verbLevel="5" />
+            verbLevel="15" />
         <column name="persistent" type="smallint"
             ucd="meta.code.qual"
-            tablehead="Persistent/Transient Flag"
+            tablehead="Persistent/Transient"
             description="Flag indicating the type of pulsar: 1 for persistent pulsars, 0 for transient pulsars"
-            verbLevel="1" />
+            verbLevel="5" />
     </table>
 
     <data id="import">
