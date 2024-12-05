@@ -77,7 +77,7 @@
             description="Start date of local spin-down period measurement in MJD"
             verbLevel="3" />
         <column name="PLocSpDownStop" type="double precision"
-            unit="d" ucd="time.stop;obs"
+            unit="d" ucd="time.end;obs"
             tablehead="loc_P_s_down_stop"
             description="End date of local spin-down period measurement in MJD"
             verbLevel="3" />
@@ -107,7 +107,7 @@
             description="Start date of local spin-up period measurement in MJD"
             verbLevel="3" />
         <column name="PLocSpUpStop" type="double precision"
-            unit="d" ucd="time.stop;obs"
+            unit="d" ucd="time.end;obs"
             tablehead="loc_P_s_up_stop"
             description="End date of local spin-up period measurement in MJD"
             verbLevel="3" />
@@ -132,7 +132,7 @@
             description="Start date of global spin-down period measurement in MJD"
             verbLevel="3" />
         <column name="PGloSpDownStop" type="double precision"
-            unit="d" ucd="time.stop;obs"
+            unit="d" ucd="time.end;obs"
             tablehead="glo_P_s_down_stop"
             description="End date of global spin-down period measurement in MJD"
             verbLevel="3" />
@@ -162,7 +162,7 @@
             description="Start date of global spin-up period measurement in MJD"
             verbLevel="3" />
         <column name="PGloSpUpStop" type="double precision"
-            unit="d" ucd="time.stop;obs"
+            unit="d" ucd="time.end;obs"
             tablehead="glo_P_s_up_stop"
             description="End date of global spin-up period measurement in MJD"
             verbLevel="3" />
@@ -362,12 +362,12 @@
             description="Reference for companion J, H, K magnitudes"
             verbLevel="15" />
         <column name="ExtBminusV" type="double precision"
-            unit="mag" ucd="phys.colorIndex"
+            unit="mag" ucd="phot.color"
             tablehead="ext_B-V"
             description="Color excess E(B−V)"
             verbLevel="3" />
         <column name="e_ExtBminusV" type="double precision"
-            unit="mag" ucd="stat.error;phys.colorIndex"
+            unit="mag" ucd="stat.error;phot.color"
             tablehead="e_ext_B-V"
             description="Error in color excess E(B−V)"
             verbLevel="15" />
@@ -382,6 +382,7 @@
             description="Flag indicating the type of pulsar: 1 for persistent pulsars, 0 for transient pulsars"
             verbLevel="5" />
     </table>
+
 
     <data id="import">
         <sources pattern="data/data.db"/>
@@ -720,7 +721,14 @@
             ]]></par>
             </setup>
             <code>
-                vars[key] = mapping.get(vars[key])
+                <!--vars[key] = mapping.get(vars[key])-->
+		if "," in vars[key]:
+			vars[key] = ", ".join(
+			mapping.get(item.strip())
+			for item in vars[key].split(",")
+			)
+		else:
+			vars[key] = mapping.get(vars[key]) 
             </code>
         </apply>
         
@@ -728,11 +736,12 @@
             LXRef BRef DistRef CompNameRef CompBVRImagRef 
             CompJHKmagRef r_ExtBminusV">
             <events>
-            <apply procDef="resolve-bibcodes">
-                <bind key="key">"\item"</bind>
-            </apply>
-        </events>
+            	<apply procDef="resolve-bibcodes">
+                	<bind key="key">"\item"</bind>
+	    	</apply>
+            </events>
         </LOOP>
+
         </rowmaker>
         </make>
     </data>
@@ -752,6 +761,6 @@
         <publish sets="local,ivo_managed" render="form"/>
     </service>
 </resource>
-        
+       
 <!-- vi:ai:sta:ts=4:et:sw=4 
 -->
