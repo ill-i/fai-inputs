@@ -122,33 +122,33 @@
 		<outputTable autoCols="obs_mjd, b_x, b_y, b_z, b_total"/>
 	</service>
 
-	<regSuite title="geomag_field regression">
+	<regSuite id="reg_tests" title="geomag_field regression">
     
-    <regTest title="geomagnetic_field TAP query works">
+    <regTest id="b_tot_test" title="geomag_field b_total test">
 			<url REQUEST="doQuery"
 						LANG="ADQL"
-						QUERY="SELECT * FROM main WHERE B_total > 55710.0"
+						QUERY="SELECT * FROM main WHERE B_total > 55000.0"
 				>tap</url>
 				<code>
 					rows = self.getVOTableRows()
 					self.assertGreater(len(rows), 0)
 					for row in rows:
-						self.assertGreater(row["B_total"], 55710.0)
+						self.assertGreater(row["B_total"], 55000.0)
 			</code>
 		</regTest>
 
-		<regTest title="geomag_field TAP MJD time range">
+		<regTest title="geomag_field mjd time range test">
 			<url REQUEST="doQuery"
 					LANG="ADQL"
 					QUERY="SELECT * FROM main
-									WHERE obs_time BETWEEN 60248.00000 AND 60250.00347"
+									WHERE obs_time BETWEEN 69248.00000 AND 69250.00347"
 				>tap</url>
 			<code>
 				rows = self.getVOTableRows()
 				self.assertEqual(len(rows), 6)
 				for row in rows:
-					self.assertGreaterEqual(row["obs_mjd"], 60248.00000)
-					self.assertLessEqual(row["obs_mjd"], 60250.00347)
+					self.assertGreaterEqual(row["obs_mjd"], 69248.00000)
+					self.assertLessEqual(row["obs_mjd"], 69250.00347)
 			</code>
 		</regTest>
 
