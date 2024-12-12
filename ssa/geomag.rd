@@ -30,7 +30,9 @@
 	<meta name="subject">space-weather</meta>
 
 	<meta name="creator">Fesenkov Astrophysical Institute</meta>
-	<meta name="instrument">LEMI-008, LEMI-203, POS-1</meta>
+	<meta name="instrument">LEMI-008</meta>
+	<meta name="instrument">LEMI-203</meta>
+	<meta name="instrument">POS-1</meta>
 	<meta name="facility">Alma-Ata Geomagnetic Observatory</meta>
 
 	<meta name="source">https://ionos.kz/en/geomagnetic-observatory-2/</meta>
@@ -77,7 +79,7 @@
 			tablehead="B_total"
 			description="Total magnetic field strength."/> 
 		<column name="source_path" type="text"
-			ucd="meta.file"
+			ucd="meta.id;meta.file"
 			tablehead="Src."
 			description="File this row was parsed from."
 			verbLevel="30"/>
@@ -89,21 +91,21 @@
 	</coverage>
 
 	<data id="import" updating="True">
-		<sources pattern="/ssa-data/data/*.txt">
+		<sources pattern="/ssa-data/data/*.csv">
 			<ignoreSources fromdb="select distinct source_path from \schema.main"/>
 		</sources>
 
-		<reGrammar names="obs_time, b_x, b_y, b_z, b_total"/>
+		<csvGrammar/>
 
 		<make table="main">
 			<rowmaker idmaps="*" id="build_main">
-				<LOOP listItems="b_x b_y b_z b_total">
-					<events>
-						<map key="\item" source="\item" nullExpr="999999.9"/>
-					</events>
-				</LOOP>
+				<map key="b_total" nullExpr="999999.9">@B_total</map>
+				<map key="b_x" nullExpr="999999.9">@Bx</map>
+				<map key="b_y" nullExpr="999999.9">@By</map>
+				<map key="b_z" nullExpr="999999.9">@Bz</map>
+				<map key="obs_time">@timestamp</map> 
 				<map key="source_path">\fullPath</map>
-				<map key="obs_mjd">dateTimeToMJD(parseISODT(@obs_time))</map>
+				<map key="obs_mjd">dateTimeToMJD(parseISODT(@timestamp))</map>
 			</rowmaker>
 		</make>
 	</data>
@@ -123,34 +125,38 @@
 	</service>
 
 	<regSuite id="reg_tests" title="geomag_field regression">
-    
-    <regTest id="b_tot_test" title="geomag_field b_total test">
-			<url REQUEST="doQuery"
-						LANG="ADQL"
-						QUERY="SELECT * FROM main WHERE B_total > 55000.0"
-				>tap</url>
+		
+		<regTest id="b_tot_test" title="geomag_field b_total test">
+			<url parSet="TAP"
+						QUERY="SELECT * FROM geomagnetic_field.main WHERE obs_mjd between 60111.6903 and 60111.691"
+				>/tap/sync</url>
 				<code>
-					rows = self.getVOTableRows()
-					self.assertGreater(len(rows), 0)
-					for row in rows:
-						self.assertGreater(row["B_total"], 55000.0)
+					row = self.getFirstVOTableRow()
+					self.assertAlmostEqual(row["b_total"], 55630.6)
+					self.assertEqual(row["obs_time"], datetime.datetime(2023, 6, 16, 16, 35))
 			</code>
 		</regTest>
 
 		<regTest title="geomag_field mjd time range test">
-			<url REQUEST="doQuery"
-					LANG="ADQL"
-					QUERY="SELECT * FROM main
-									WHERE obs_time BETWEEN 69248.00000 AND 69250.00347"
-				>tap</url>
+			<url parSet="TAP"
+					QUERY="SELECT * FROM geomagnetic_field.main
+									WHERE obs_mjd BETWEEN 60248.00000 AND 60248.004"
+				>/tap/sync</url>
 			<code>
 				rows = self.getVOTableRows()
 				self.assertEqual(len(rows), 6)
-				for row in rows:
-					self.assertGreaterEqual(row["obs_mjd"], 69248.00000)
-					self.assertLessEqual(row["obs_mjd"], 69250.00347)
+				self.assertEqual({r["b_x"]&lt;-60 for r in rows}, {True})
 			</code>
 		</regTest>
 
+    <regTest title="geomag web interface is there">
+      <url parSet="form" obs_mjd="2023.231 ..  2023.2311">q/form</url>
+      <code><![CDATA[
+        self.assertHasStrings(
+          "2023-03-26T14:57:00Z", # mjd serialisation, first row
+          "55618.7", # B total, last row
+          'title="Magnetic field component in the Y direction."')
+      ]]></code>
+    </regTest>
 	</regSuite>
 </resource>

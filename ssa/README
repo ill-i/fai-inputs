@@ -1,0 +1,6 @@
+Here, we publish various results from the Almaty geophysical observatory.
+
+The data is coming in through an upstream NFS mount.  This means that
+sometimes data is still being written while we see it.  Therefore,
+the RDs have rowfilters skipping files with modification dates in
+the recent past.  Do not be unnerved by that.

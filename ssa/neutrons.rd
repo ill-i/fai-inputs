@@ -1,102 +1,133 @@
-<!-- A template for a simple, TAP-accessible table with no further frills.
-If you have "typed" data (object catalgues, images, spectra...), use
-a more refined template.
-
-To fill it out, search and replace %.*%
-
-Note that this doesn't expose all features of DaCHS.  For advanced
-projects, you'll still have to read documentation... -->
-
-
 <resource schema="neutrons" resdir=".">
-  <meta name="creationDate">2024-12-11T15:27:49Z</meta>
+	<meta name="creationDate">2024-12-11T15:27:49Z</meta>
 
-  <meta name="title">%title -- not more than a line%</meta>
-  <meta name="description">
-    %this should be a paragraph or two (take care to mention salient terms)%
-  </meta>
-  <!-- Take keywords from
-    http://www.ivoa.net/rdf/uat
-    if at all possible -->
-  <meta name="subject">%keywords; repeat the element as needed%</meta>
+	<meta name="title">Alma-Ata Station Neutron Monitor Data Service </meta>
+	<meta name="description">
+		The Alma-Ata Cosmic Ray Station operates the 18NM-64 neutron supermonitor
+		at an altitude of 3340 meters above sea level with a geomagnetic cutoff
+		rigidity of 6.7 GeV. The station provides real-time minute-level measurements of
+		cosmic ray intensity and atmospheric pressure, contributing data to the
+		international NMDB network (www.nmdb.eu).
 
-  <meta name="creator">%authors in the format Last, F.I; Next, A.%</meta>
-  <meta name="instrument">%telescope or detector or code used%</meta>
-  <meta name="facility">%observatory/probe at which the data was taken%</meta>
+		This service publishes daily tables containing two columns: timestamp and
+		counts/sec. The timestamps reflect actual measurement times, ensuring accurate
+		tracking even when delayed data from previous days is incorporated into current
+		files due to communication delays with space stations.
+	</meta>
+	<meta name="subject">space-weather</meta>
+	<meta name="subject">neutron-monitors</meta>
+	<meta name="subject">cosmic-ray-detectors</meta>
 
-  <meta name="source">%ideally, a bibcode%</meta>
-  <meta name="contentLevel">Research</meta>
-  <meta name="type">Catalog</meta>  <!-- or Archive, Survey, Simulation -->
+	<meta name="creator">Fesenkov Astrophysical Institute</meta>
+	<meta name="instrument">18NM-64 Neutron Monitor</meta>
+	<meta name="facility">Alma-Ata Cosmic Ray Station (AATB)</meta>
 
-  <!-- Waveband is of Radio, Millimeter,
-      Infrared, Optical, UV, EUV, X-ray, Gamma-ray, can be repeated;
-      remove if there are no messengers involved.  -->
-  <meta name="coverage.waveband">%word from controlled vocabulary%</meta>
+	<meta name="source">https://ionos.kz/</meta>
+	<meta name="contentLevel">Research</meta>
+	<meta name="type">Archive</meta> 
 
-  <table id="main" onDisk="True" adql="True">
-    <column name="%enter a name%" type="%sql type: integer, double precisions...%"
-      unit="%remove the attribute if unitless%" ucd="%cf. dachs adm suggest%"
-      tablehead="%short label for a table header%"
-      description="%long, human readable information.  Be precise here%"/>
-    %add further columns%
-  </table>
+	<execute every="3600" title="Ingest new files">
+		<job>
+			<code>
+				execDef.spawn("dachs imp \rdId")
+			</code>
+		</job>
+	</execute>
 
-  <data id="import">
-    <sources pattern="%resdir-relative pattern, like data/*.txt%"/>
+	<table id="main" onDisk="True" adql="True">
+		<index columns="obs_mjd"/>
+		<index columns="source_path"/>
+		<index columns="counts"/>
 
-    <!-- the grammar really depends on your input material.  See
-      http://docs.g-vo.org/DaCHS/ref.html#grammars-available,
-      in particular columnGrammar, csvGrammar, fitsTableGrammar,
-      and reGrammar; if nothing else helps see embeddedGrammar
-      or customGrammar -->
-    <csvGrammar names="name1 some_other_name and_so_on"/>
+		<column name="obs_mjd" type="double precision"
+			unit="d" ucd="time.epoch"
+			tablehead="Observed at"
+			description="Universal time of the observation at the detector as MJD."
+			displayHint="type=humanDate"/>
+		<column name="counts" type="double precision"
+			unit="count*sec**-1" ucd="arith.rate;phys.particle.neutron"
+			tablehead="Count"
+			description="Average neutron counts per second, derived from one-minute measurements."/>
+		<column name="source_path" type="text"
+			ucd="meta.id;meta.file"
+			tablehead="Src."
+			description="File this row was parsed from."
+			verbLevel="30"/>
+	</table>
 
-    <make table="main">
-      <rowmaker idmaps="*">
-        <!-- the following is an example of a mapping rule that uses
-        a python expression; @something takes the value of the something
-        field returned by the grammar.  You obviously need to edit
-        or remove this concrete rule. -->
-        <map dest="%name of a column%">int(@some_other_name[2:])</map>
-      </rowmaker>
-    </make>
-  </data>
+	<coverage>
+		<temporal>59555 70000</temporal>
+	</coverage>
 
-  <service id="q" allowed="form">
-    <!-- if you want a browser-based service in addition to TAP, use
-    this.  Otherwise, delete this and just write <publish/> into
-    the table element above to publish the table as such.  With a
-    service, the table will be published as part of the service -->
-    <meta name="shortName">%max. 16 characters%</meta>
+	<data id="import" updating="True">
+		<sources pattern="/ssa-data/ndata/*.csv">
+			<ignoreSources fromdb="select distinct source_path from \schema.main"/>
+		</sources>
 
-    <!-- the browser interface goes to the VO and the front page -->
-    <publish render="form" sets="ivo_managed, local"/>
-    <!-- all publish elements only become active after you run
-      dachs pub q -->
+		<csvGrammar>
+			<rowfilter>
+				<code>
+					# upstream writes their files live; skip files that
+					# still seem to be written to.
+					if os.path.getmtime(rowIter.sourceToken)>time.time()-3600:
+						raise SkipThis(f"Skipping file still being written to: {rowIter.sourceToken}")
+					yield row
+				</code>
+			</rowfilter>
+		</csvGrammar>
 
-    <dbCore queriedTable="main">
-      <!-- to add query constraints on table columns, add condDesc
-      elements built from the column -->
-      <condDesc buildFrom="%colname%"/>
-    </dbCore>
-  </service>
+		<make table="main">
+			<rowmaker idmaps="*">
+				<map key="source_path">\fullPath</map>
+				<map key="obs_mjd">dateTimeToMJD(parseISODT(@timestamp))</map>
+				<map key="counts">float(vars["counts/sec"])</map>
+			</rowmaker>
+		</make>
+	</data>
 
-  <regSuite title="neutrons regression">
-    <regTest title="neutrons table serves some data">
-      <url parSet="TAP"
-        QUERY="SELECT * FROM neutrons.main WHERE %select one column%"
-        >/tap/sync</url>
-      <code>
-        # The actual assertions are pyUnit-like.  Obviously, you want to
-        # remove the print statement once you've worked out what to test
-        # against.
-        row = self.getFirstVOTableRow()
-        print(row)
-        self.assertAlmostEqual(row["ra"], 22.22222)
-      </code>
-    </regTest>
+	<service id="q" allowed="form">
+		<meta name="shortName">\schema data</meta>
 
-    <!-- add more tests: extra tests for the web side, custom widgets,
-      rendered outputFields... -->
-  </regSuite>
+		<publish render="form" sets="ivo_managed, local"/>
+
+		<dbCore queriedTable="main">
+			<condDesc>
+				<inputKey original="obs_mjd" type="vexpr-mjd"/>
+			</condDesc>
+			<condDesc buildFrom="counts"/>
+		</dbCore>
+		<outputTable autoCols="obs_mjd counts"/>
+	</service>
+
+	<regSuite title="neutrons regression">
+		<regTest title="neutrons table serves some data">
+			<url parSet="TAP"
+				QUERY="SELECT * FROM neutrons.main WHERE counts > 1270"
+				>/tap/sync</url>
+			<code>
+				# The actual assertions are pyUnit-like.	Obviously, you want to
+				# remove the print statement once you've worked out what to test
+				# against.
+				row = self.getFirstVOTableRow()
+				print(row)
+				self.assertGreaterEqual(row["counts"], 1270)
+			</code>
+		</regTest>
+
+		<regTest title="neutrons mjd time range test">
+			<url REQUEST="doQuery"
+					LANG="ADQL"
+					QUERY="SELECT * FROM main
+									WHERE obs_mjd BETWEEN 60248.00000 AND 60250.00347"
+				>tap</url>
+			<code>
+				rows = self.getVOTableRows()
+				self.assertEqual(len(rows), 6)
+				for row in rows:
+					self.assertGreaterEqual(row["obs_mjd"], 60248.00000)
+					self.assertLessEqual(row["obs_mjd"], 60250.00347)
+			</code>
+		</regTest>
+
+	</regSuite>
 </resource>
