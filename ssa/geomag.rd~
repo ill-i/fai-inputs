@@ -92,18 +92,18 @@
 	</coverage>
 
 	<data id="import" updating="True">
-		<sources pattern="./data/data/*.csv">
+		<sources pattern="/ssa-data/data/*.csv">
 			<ignoreSources fromdb="select distinct source_path from \schema.main"/>
 		</sources>
 
 		<csvGrammar/>
 
 		<make table="main">
-			<rowmaker id="build_main">
-				<map key="b_total">parseWithNull(@B_total, float, "999999.9")</map>
-				<map key="b_x">parseWithNull(@Bx, float, "999999.9")</map>
-				<map key="b_y">parseWithNull(@By, float, "999999.9")</map>
-				<map key="b_z">parseWithNull(@Bz, float, "999999.9")</map>
+			<rowmaker idmaps="*" id="build_main">
+				<map key="b_total" nullExpr="999999.9">@B_total</map>
+				<map key="b_x" nullExpr="999999.9">@Bx</map>
+				<map key="b_y" nullExpr="999999.9">@By</map>
+				<map key="b_z" nullExpr="999999.9">@Bz</map>
 				<map key="obs_time">@timestamp</map> 
 				<map key="source_path">\fullPath</map>
 				<map key="obs_mjd">dateTimeToMJD(parseISODT(@timestamp))</map>

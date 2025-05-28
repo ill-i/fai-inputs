@@ -2,19 +2,30 @@
 	<meta name="creationDate">2024-12-11T15:27:49Z</meta>
 
 	<meta name="title">Alma-Ata Station Neutron Monitor Data Service </meta>
-	<meta name="description">
-		The Alma-Ata Cosmic Ray Station operates the 18NM-64 neutron supermonitor
-		at an altitude of 3340 meters above sea level with a geomagnetic cutoff
-		rigidity of 6.7 GeV. The station provides real-time minute-level measurements of
-		cosmic ray intensity and atmospheric pressure, contributing data to the
-		international NMDB network (www.nmdb.eu).
+	<meta name="description" format="rst">
+    The Alma-Ata Cosmic Ray Station operates the 18NM-64 neutron
+    supermonitor at an altitude of 3340 meters above sea level,
+    with a geomagnetic cutoff rigidity of 6.7 GeV. The station
+    provides real-time, minute-level measurements of cosmic ray
+    intensity, contributing to the
+    international NMDB network. These data support the study of 
+    cosmic ray variations and space weather phenomena.
 
-		This service publishes daily tables containing two columns: timestamp and
-		counts/sec. The timestamps reflect actual measurement times, ensuring accurate
-		tracking even when delayed data from previous days is incorporated into current
-		files due to communication delays with space stations.
-	</meta>
-	<meta name="subject">space-weather</meta>
+    The provided dataset consists of daily tables,
+    where each table corresponds to a single observation day.
+    The data includes two columns:
+    
+    - **Obs_time**: The time of observation at the detector (UTC).
+    - **Count [ct/s]**: The recorded cosmic ray intensity in 
+        counts per second.
+
+    The data are collected and provided by the Institute of Ionosphere, 
+    (https://ionos.kz/) and are also available through the Kazakhstan
+    Space Weather Portal (https://ssa.fai.kz/, registration required), 
+    which additionally offers interactive visualizations and graphs.
+  
+  </meta>
+  <meta name="subject">space-weather</meta>
 	<meta name="subject">neutron-monitors</meta>
 	<meta name="subject">cosmic-ray-detectors</meta>
 
@@ -35,17 +46,21 @@
 	</execute>
 
 	<table id="main" onDisk="True" adql="True">
+		<index columns="obs_time"/>
 		<index columns="obs_mjd"/>
 		<index columns="source_path"/>
 		<index columns="counts"/>
-
+    <column name="obs_time" type="timestamp"
+      ucd="time.epoch"
+      tablehead="Timestamp"
+      description="Time (UTC) of the observation at the detector."/>
 		<column name="obs_mjd" type="double precision"
 			unit="d" ucd="time.epoch"
-			tablehead="Observed at"
-			description="Universal time of the observation at the detector as MJD."
+			tablehead="Obs_time"
+			description="Time (UTC) of the observation (yyyy-mm-dd)."
 			displayHint="type=humanDate"/>
 		<column name="counts" type="double precision"
-			unit="count*sec**-1" ucd="arith.rate;phys.particle.neutron"
+			unit="ct/s" ucd="arith.rate;phys.particle.neutron"
 			tablehead="Count"
 			description="Average neutron counts per second, derived from one-minute measurements."/>
 		<column name="source_path" type="text"
@@ -60,7 +75,7 @@
 	</coverage>
 
 	<data id="import" updating="True">
-		<sources pattern="/ssa-data/ndata/*.csv">
+		<sources pattern="./data/ndata/*.csv">
 			<ignoreSources fromdb="select distinct source_path from \schema.main"/>
 		</sources>
 
@@ -78,6 +93,7 @@
 
 		<make table="main">
 			<rowmaker idmaps="*">
+				<map key="obs_time">@timestamp</map>
 				<map key="source_path">\fullPath</map>
 				<map key="obs_mjd">dateTimeToMJD(parseISODT(@timestamp))</map>
 				<map key="counts">float(vars["counts/sec"])</map>
@@ -96,36 +112,19 @@
 			</condDesc>
 			<condDesc buildFrom="counts"/>
 		</dbCore>
-		<outputTable autoCols="obs_mjd counts"/>
+		<outputTable autoCols="obs_mjd, counts"/>
 	</service>
 
 	<regSuite title="neutrons regression">
 		<regTest title="neutrons table serves some data">
 			<url parSet="TAP"
-				QUERY="SELECT * FROM neutrons.main WHERE counts > 1270"
+				QUERY="SELECT * FROM neutrons.main WHERE obs_mjd between 60111.691 and 60111.692"
 				>/tap/sync</url>
 			<code>
-				# The actual assertions are pyUnit-like.	Obviously, you want to
-				# remove the print statement once you've worked out what to test
-				# against.
 				row = self.getFirstVOTableRow()
 				print(row)
-				self.assertGreaterEqual(row["counts"], 1270)
-			</code>
-		</regTest>
-
-		<regTest title="neutrons mjd time range test">
-			<url REQUEST="doQuery"
-					LANG="ADQL"
-					QUERY="SELECT * FROM main
-									WHERE obs_mjd BETWEEN 60248.00000 AND 60250.00347"
-				>tap</url>
-			<code>
-				rows = self.getVOTableRows()
-				self.assertEqual(len(rows), 6)
-				for row in rows:
-					self.assertGreaterEqual(row["obs_mjd"], 60248.00000)
-					self.assertLessEqual(row["obs_mjd"], 60250.00347)
+				self.assertAlmostEqual(row["counts"], 1315.5)
+				self.assertEqual(row["obs_time"],datetime.datetime(2023, 6, 16, 16, 36))
 			</code>
 		</regTest>
 

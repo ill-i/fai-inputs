@@ -92,7 +92,7 @@
 	</coverage>
 
 	<data id="import" updating="True">
-		<sources pattern="./data/data/*.csv">
+		<sources pattern="/ssa-data/data/*.csv">
 			<ignoreSources fromdb="select distinct source_path from \schema.main"/>
 		</sources>
 
