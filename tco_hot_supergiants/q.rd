@@ -271,61 +271,6 @@ Primary and scientific data reduction was performed within the IRAF (Image Reduc
       verbLevel="25"/>
   </table>
 
-  <procDef type="apply" id="read_sidecar">
-    <setup>
-      <code>
-        import os
-        import warnings
-        from astropy.io import fits as pyfits
-        from astropy.utils.exceptions import AstropyWarning
-        from astropy.coordinates import Angle
-        import astropy.units as u
-      </code>
-    </setup>
-    <code>
-      rel_path = vars.get("prodtar") or vars.get("accref")
-      if not rel_path:
-          return
-          
-      hdr_path = os.path.join(base.getConfig("inputsDir"), rel_path + ".hdr")
-      
-      vars["safe_ra"] = None
-      vars["safe_dec"] = None
-      
-      if os.path.exists(hdr_path):
-          with warnings.catch_warnings():
-              warnings.simplefilter('ignore', AstropyWarning)
-              try:
-                  hdr = pyfits.Header.fromtextfile(hdr_path)
-                  for k, v in hdr.items():
-                      if k and k not in ["COMMENT", "HISTORY"]:
-                          vars["hdr_" + k.replace("-", "_")] = v
-              except Exception:
-                  pass
-                  
-      raw_ra = vars.get("hdr_RA") or vars.get("RA")
-      raw_dec = vars.get("hdr_DEC") or vars.get("DEC")
-      
-
-      # Robustly clean coordinate strings and bind them to BOTH namespaces
-      if raw_ra:
-          try:
-              clean_ra = str(raw_ra).split('/')[0].strip()
-              deg_ra = Angle(clean_ra, unit=u.hourangle).degree
-              vars["safe_ra"] = deg_ra
-              row["safe_ra"] = deg_ra  # Exposes the variable to the @safe_ra macro lookup
-          except Exception: pass
-          
-      if raw_dec:
-          try:
-              clean_dec = str(raw_dec).split('/')[0].strip()
-              deg_dec = Angle(clean_dec, unit=u.deg).degree
-              vars["safe_dec"] = deg_dec
-              row["safe_dec"] = deg_dec  # Exposes the variable to the @safe_dec macro lookup
-          except Exception: pass
-    </code>
-  </procDef>
-
   <data id="import">
     <property name="previewDir">previews</property>
     <sources recurse="True" pattern="data/*.fits"/>
