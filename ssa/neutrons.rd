@@ -3,29 +3,29 @@
 
 	<meta name="title">Alma-Ata Station Neutron Monitor Data Service </meta>
 	<meta name="description" format="rst">
-    The Alma-Ata Cosmic Ray Station operates the 18NM-64 neutron
-    supermonitor at an altitude of 3340 meters above sea level,
-    with a geomagnetic cutoff rigidity of 6.7 GeV. The station
-    provides real-time, minute-level measurements of cosmic ray
-    intensity, contributing to the
-    international NMDB network. These data support the study of 
-    cosmic ray variations and space weather phenomena.
+		The Alma-Ata Cosmic Ray Station operates the 18NM-64 neutron
+		supermonitor at an altitude of 3340 meters above sea level,
+		with a geomagnetic cutoff rigidity of 6.7 GeV. The station
+		provides real-time, minute-level measurements of cosmic ray
+		intensity, contributing to the
+		international NMDB network. These data support the study of 
+		cosmic ray variations and space weather phenomena.
 
-    The provided dataset consists of daily tables,
-    where each table corresponds to a single observation day.
-    The data includes two columns:
-    
-    - **Obs_time**: The time of observation at the detector (UTC).
-    - **Count [ct/s]**: The recorded cosmic ray intensity in 
-        counts per second.
+		The provided dataset consists of daily tables,
+		where each table corresponds to a single observation day.
+		The data includes two columns:
+		
+		- **Obs_time**: The time of observation at the detector (UTC).
+		- **Count [ct/s]**: The recorded cosmic ray intensity in 
+				counts per second.
 
-    The data are collected and provided by the Institute of Ionosphere, 
-    (https://ionos.kz/) and are also available through the Kazakhstan
-    Space Weather Portal (https://ssa.fai.kz/, registration required), 
-    which additionally offers interactive visualizations and graphs.
-  
-  </meta>
-  <meta name="subject">space-weather</meta>
+		The data are collected and provided by the Institute of Ionosphere, 
+		(https://ionos.kz/) and are also available through the Kazakhstan
+		Space Weather Portal (https://ssa.fai.kz/, registration required), 
+		which additionally offers interactive visualizations and graphs.
+	
+	</meta>
+	<meta name="subject">space-weather</meta>
 	<meta name="subject">neutron-monitors</meta>
 	<meta name="subject">cosmic-ray-detectors</meta>
 
@@ -40,7 +40,8 @@
 	<execute every="3600" title="Ingest new files">
 		<job>
 			<code>
-				execDef.spawn("dachs imp \rdId")
+				#execDef.spawn("dachs imp \rdId")
+				execDef.spawn(["dachs", "imp", "ssa/neutrons"])
 			</code>
 		</job>
 	</execute>
@@ -50,15 +51,14 @@
 		<index columns="obs_mjd"/>
 		<index columns="source_path"/>
 		<index columns="counts"/>
-    <column name="obs_time" type="timestamp"
-      ucd="time.epoch"
-      tablehead="Timestamp"
-      description="Time (UTC) of the observation at the detector."/>
+		<column name="obs_time" type="timestamp"
+			ucd="time.epoch"
+			tablehead="Timestamp"
+			description="Time of observation in UTC (yyyy-mm-ddThh:mm:ssZ)."/>
 		<column name="obs_mjd" type="double precision"
 			unit="d" ucd="time.epoch"
-			tablehead="Obs_time"
-			description="Time (UTC) of the observation (yyyy-mm-dd)."
-			displayHint="type=humanDate"/>
+			tablehead="Obs. MJD"
+			description="Time of observation in MJD."/>
 		<column name="counts" type="double precision"
 			unit="ct/s" ucd="arith.rate;phys.particle.neutron"
 			tablehead="Count"
@@ -108,11 +108,11 @@
 
 		<dbCore queriedTable="main">
 			<condDesc>
-				<inputKey original="obs_mjd" type="vexpr-mjd"/>
+				<inputKey original="obs_time" type="date"/>
 			</condDesc>
 			<condDesc buildFrom="counts"/>
 		</dbCore>
-		<outputTable autoCols="obs_mjd, counts"/>
+		<outputTable autoCols="obs_time, obs_mjd, counts"/>
 	</service>
 
 	<regSuite title="neutrons regression">

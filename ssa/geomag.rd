@@ -3,29 +3,37 @@
 
 	<meta name="title">Alma-Ata Geomagnetic Observatory Data Service</meta>
 	<meta name="description" format="rst">
-    The Alma-Ata Geomagnetic Observatory provides continuous monitoring of
-    Earth's geomagnetic field. Located at 1300 meters above sea level in the
-    foothills of the Tien Shan Mountains, approximately 10 km from Almaty,
-    Kazakhstan, the observatory operates state-of-the-art equipment certified by
-    INTERMAGNET, including the fluxgate magnetometer LEMI-008 and the proton
-    Overhauser magnetometer POS-1.
+		The Alma-Ata Geomagnetic Observatory provides continuous monitoring of
+		Earth's geomagnetic field. Located at 1300 meters above sea level in the
+		foothills of the Tien Shan Mountains, approximately 10 km from Almaty,
+		Kazakhstan, the observatory operates state-of-the-art equipment certified by
+		INTERMAGNET, including the fluxgate magnetometer LEMI-008 and the proton
+		Overhauser magnetometer POS-1.
 
-    The data service includes:
+		The data service includes:
 
-    * **Observables**: Three components of the geomagnetic field vector (X, Y, Z)
-      and the total field amplitude (F), measured in nanoteslas (nT).
-    * **Data Resolution**:
-      - XYZ components measured at a 1-second frequency.
-      - F component measured at a 5-second frequency.
-      - Derived minute averages for XYZF components available in real time.
-      - Absolute measurements performed two to three times per week.
+		* **Observables**: Three components of the geomagnetic field vector (X, Y, Z) and the total field amplitude (F), measured in nanoteslas (nT).
 
-    The service provides open access to minute and hourly data (XYZF components
-    and K-index of geomagnetic activity) through the Institute of Ionosphere's
-    website for data from 2003 onward. Additionally, INTERMAGNET hosts minute
-    variations data since 2004. Data prior to 2003 are available upon request.
+		* **Data Resolution**:
 
-    The data is collected and provided by the Institute of Ionosphere (https://ionos.kz/).
+			- XYZ components measured at a 1-second frequency.
+
+			- F component measured at a 5-second frequency.
+
+			- Derived minute averages for XYZF components available in real time.
+
+			- Absolute measurements performed two to three times per week.
+
+		The service provides open access to minute- and hour-resolution data
+		(XYZF components and the geomagnetic K-index) from 2003 onward via
+		the Institute of Ionosphere’s website (https://ionos.kz/).
+		Minute-resolution variation data since 2004 are also available through
+		the INTERMAGNET network. Data prior to 2003 are available upon request.
+
+		The dataset is maintained by the Institute of Ionosphere and is
+		additionally accessible through the Kazakhstan Space Weather Portal
+		(https://ssa.fai.kz/, registration required), which also offers
+		interactive plots and visualizations.
 	</meta>
 	<meta name="subject">geomagnetic-fields</meta>
 	<meta name="subject">space-weather</meta>
@@ -43,7 +51,8 @@
 	<execute at="1:00" title="Ingest new files">
 		<job>
 			<code>
-				execDef.spawn("dachs imp \rdId")
+				#execDef.spawn("dachs imp \rdId")
+				execDef.spawn(["dachs", "imp", "ssa/geomag"])
 			</code>
 		</job>
 	</execute>
@@ -56,13 +65,11 @@
 		<column name="obs_time" type="timestamp"
 			ucd="time.epoch"
 			tablehead="Timestamp"
-			description="Universal time of the observation at the detector."/>
+			description="Time of observation in UTC (yyyy-mm-ddThh:mm:ssZ)."/>
 		<column name="obs_mjd" type="double precision"
 			unit="d" ucd="time.epoch"
-			tablehead="Observed at"
-			description="Universal time of the observation at the detector as MJD."
-			displayHint="type=humanDate"/>
-
+			tablehead="Obs. MJD"
+			description="Time of the observation at the detector as MJD."/>
 		<column name="b_x" type="double precision"
 			unit="nT" ucd="phys.magField;pos.cartesian.x"
 			tablehead="B_x"
@@ -118,11 +125,11 @@
 
 		<dbCore queriedTable="main">
 			<condDesc>
-				<inputKey original="obs_mjd" type="vexpr-mjd"/>
+				<inputKey original="obs_time" type="date"/>
 			</condDesc>
 			<condDesc buildFrom="b_total"/>
 		</dbCore>
-		<outputTable autoCols="obs_mjd, b_x, b_y, b_z, b_total"/>
+		<outputTable autoCols="obs_time, obs_mjd, b_x, b_y, b_z, b_total"/>
 	</service>
 
 	<regSuite id="reg_tests" title="geomag_field regression">
@@ -150,14 +157,14 @@
 			</code>
 		</regTest>
 
-    <regTest title="geomag web interface is there">
-      <url parSet="form" obs_mjd="2023.231 ..  2023.2311">q/form</url>
-      <code><![CDATA[
-        self.assertHasStrings(
-          "2023-03-26T14:57:00Z", # mjd serialisation, first row
-          "55618.7", # B total, last row
-          'title="Magnetic field component in the Y direction."')
-      ]]></code>
-    </regTest>
+		<regTest title="geomag web interface is there">
+			<url parSet="form" obs_mjd="2023.231 ..	2023.2311">q/form</url>
+			<code><![CDATA[
+				self.assertHasStrings(
+					"2023-03-26T14:57:00Z", # mjd serialisation, first row
+					"55618.7", # B total, last row
+					'title="Magnetic field component in the Y direction."')
+			]]></code>
+		</regTest>
 	</regSuite>
 </resource>

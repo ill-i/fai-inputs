@@ -42,7 +42,8 @@
   <execute at="01:00" title="Ingest new files">
     <job>
       <code>
-        execDef.spawn("dachs imp \rdId")
+        #execDef.spawn("dachs imp \rdId")
+        execDef.spawn(["dachs", "imp", "ssa/solar_flux"])
       </code>
     </job>
   </execute>
@@ -55,15 +56,15 @@
 		<index columns="source_path"/>
 		<index columns="flux"/>
 		<column name="obs_time" type="timestamp"
-			ucd="time.epoch"
-			tablehead="Timestamp"
-			description="Time (UTC) of the observation (yyyy-mm-dd)."/>
+  		ucd="time.epoch"
+  		tablehead="Timestamp"
+  		description="Time of observation in UTC (yyyy-mm-ddThh:mm:ssZ)."
+			displayHint="type=humanDate"/>
 		<column name="obs_mjd" type="double precision"
 			unit="d" ucd="time.epoch"
-			tablehead="Obs_time"
-			description="Time (UTC) of the observation (yyyy-mm-dd)."
-			displayHint="type=humanDate"/>
-		<column name="flux" type="double precision"
+			tablehead="Obs. MJD"
+			description="Time of observation in MJD."/>	
+    <column name="flux" type="double precision"
 			unit="SFU" ucd="phot.flux.density;em.radio"
 			tablehead="Flux"
 			description="Solar radio flux density measured in Solar Flux Units (SFU)."/>
@@ -102,22 +103,23 @@
 
 		<dbCore queriedTable="main">
 			<condDesc>
-				<inputKey original="obs_mjd" type="vexpr-mjd"/>
+				<inputKey original="obs_time" type="date"/>				
 			</condDesc>
 			<condDesc buildFrom="flux"/>
 		</dbCore>
-		<outputTable autoCols="obs_mjd, flux"/>
+		<outputTable autoCols="obs_time, obs_mjd, flux"/>
 	</service>
 
 	<regSuite title="solar_flux regression">
     <regTest title="solar flux test">
       <url parSet="TAP"
-            QUERY="SELECT * FROM solar_flux.main WHERE obs_mjd between 60111.6903 and 60111.691"
+        QUERY="SELECT * FROM solar_flux.main
+               WHERE obs_time BETWEEN '2023-06-16T16:34:59' AND '2023-06-16T16:35:01'"
         >/tap/sync</url>
-        <code>
+      <code>
           row = self.getFirstVOTableRow()
           self.assertAlmostEqual(row["flux"], 146)
-          self.assertEqual(row["obs_time"], datetime.datetime(2023, 6, 16, 16, 35))
+          self.assertEqual(str(row["obs_time"]), "2023-06-16T16:35:00")
       </code>
     </regTest>
 	</regSuite>
