@@ -35,225 +35,11 @@ from googletrans import Translator
 
 observatory= Observer(name='observatory',location=EarthLocation.from_geodetic('76d57m58.00s','43d10m36.00s'))
 
-TELESCOPE_ENG = { #####################MAY BE WE SHOULD USE UPPER CASE TO COMPAIR VALUE WITH DICTIONARY????
-  "51cmменисковыйтелескопмаксутова":
-  "Wide aperture Maksutov meniscus telescope with main mirror 50 cm",
-  "50cmменисковыйтелескопмаксутова":
-  "Wide aperture Maksutov meniscus telescope with main mirror 50 cm",
-  '50смменисковыйтелескопмаксутова':
-  "Wide aperture Maksutov meniscus telescope with main mirror 50 cm",
-  "большойшмидт": "Schmidt telescope (large camera)",
-  "большаякамерашмидта": "Schmidt telescope (large camera)",
-  "малыйшмидт": "Schmidt small camera",
-  "azt-8":"AZT-8",
-  "AZT-8":"AZT-8",
-  None: "Provenance lost"}
-
-METHOD_ENG = {#####################MAY BE WE SHOULD USE UPPER CASE TO COMPAIR VALUE WITH DICTIONARY
-  "методметкофа": "Metkof method",
-  "методметкофа-блажко":"Metkof-Blazhko method",
-  "методметкофа-блажко." :"Metkof-Blazhko method",
-  "методметкоф-блажко":"Metkof-Blazhko method"
-}
-
-
-#foclen[mm],pltsize[cm],field[deg2],mirror_diam[mm]
-TELESCOPE_PARAM_DIC = { 
-    "Wide aperture Maksutov meniscus telescope with main mirror 50 cm":
-      [1200,[100,100],30,500],
-    "Schmidt telescope (large camera)": [773,[90,120],46.6,None],
-    "AZT-8": [11000,[130,160],0.25,700],
-    "Unknown": [None,[None,None],None,None]}
-
-FILTERS_ENG = {  #CHECK ON + and (10x10)
-####Remove spacesand use lower case and remove dots . for checking ||| replace , and + with ;
-    None:             'unknown',
-    'бф':             'white filter',
-    'б/ф':            'white filter',
-
-    'бс8':            'white glass 8',
-
-    'жс3':            'yellow glass 3',
-    'жс11':           'yellow glass 11',
-    'жс12':           'yellow glass 12',
-    'жс14':           'yellow glass 14',
-    'жс17':           'yellow glass 17',
-    'жc17':           'yellow glass 17',
-    'жс18':           'yellow glass 18',
-    'жc18':           'yellow glass 18',
-    'жс18(1)':        'yellow glass 18 (thickness=1mm)',
-    'жс19':           'yellow glass 19',
-    'жс20':           'yellow glass 20',
-    'жс21':           'yellow glass 21',
-    'жс22':           'yellow glass 22',
-
-    'жсii':           'yellow glass II',
-    'жс18(1)':        'yellow glass (thickness=1mm)',
-    'жс18(10)':       'yellow glass (thickness=10mm)',
-
-    'жф':             'yellow filter',
-    'жфi':            'yellow filter I',
-    'жфii':           'yellow filter II',
-    'жфiii':          'yellow filter III',
-
-    'жф3':            'yellow filter 3',
-    'жф12':           'yellow filter 12',
-    'жф13':           'yellow filter 13',
-    'жф17':           'yellow filter 17',
-    'жф18':           'yellow filter 18',
-    'жф19':           'yellow filter 19',
-    'жф20':           'yellow filter 20',
-
-    'жфni':           'yellow filter I',
-    'жфn1':           'yellow filter 1',
-    'жфn2':           'yellow filter 2',
-
-    'инфра-кф83':     'infrared filter 83',
-    'инфра-кф84':     'infrared filter 84',
-    'инфркрф84':      'infrared filter 84',
-
-    'кфi':            'red filter I',
-    'крфi':           'red filter I',
-    'кфii':           'red filter II',
-    'крфii':          'red filter II',
-    'кфiii':          'red filter III',
-    'крфiii':         'red filter III',
-    'кфiii(h_alf)':   'red filter III (H_alpha)',
-
-    'крф№kc12':       'red filter; red glass 12',
-    'крфkc11-12':     'red filter; red glass 11-12',
-    'kpфn3':          'red filter 3',
-
-    'кф':             'red filter',
-    'крф':            'red filter',
-    'красныйфильтр':  'red filter',
-    'kpфn1':          'red filter 1',
-    'кф2':            'red filter 2',
-    'крф№2':          'red filter 2',
-    'кф№2':           'red filter 2',
-    'крф№3':          'red filter 3',
-    'кф№3':           'red filter 3',
-    'крф№21':         'red filter 21',
-    'кф№21':          'red filter 21',
-    'крф№21010':      'red filter 2',
-    'кф№84':          'red filter 84',
-    'крф11-12':       'red filter 11-12',
-    'крф14':          'red filter 14',
-    'кф19':           'red filter 19',
-
-    'кс10(10mm)':    'red glass (thickness=10mm)',
-    'kc10(10mm)':    'red glass (thickness=10mm)',
-    'kcns':           'red glass',
-    'ксii-12':        'red glass II-12',
-    'kc11-13':        'red glass 11-13',
-    'kc11-14':        'red glass 11-14',
-    'kc11-15':        'red glass 11-15',
-    'kc11-16':        'red glass 11-16',
-    'kc11-17':        'red glass 11-17',
-
-    'kc18(10)':       'red glass (thickness=10mm)',
-
-    'кс10':           'red glass 10',
-    'кc10':           'red glass 10',
-    'kc10':           'red glass 10',
-    'кс11':           'red glass 11',
-    'кс12':           'red glass 12',
-    'kс12':           'red glass 12',
-    'кс13':           'red glass 13',
-    'кc13':           'red glass 13',
-    'кс14':           'red glass 14',
-    'кc14':           'red glass 14',
-    'kc15':           'red glass 15',
-    'кс11-12':        'red glass 11-12',
-    'kc11-12':        'red glass 11-12',
-    'кс17':           'red glass 17',
-    'кc17':           'red glass 17',
-    'kc17':           'red glass 17',
-    'кс-17':          'red glass 17',
-    'кс18':           'red glass 18',
-    'kc18':           'red glass 18',
-    'kс18':           'red glass 18',
-    'кс19':           'red glass 19',
-
-    'kp':             'red glass/filter',
-
-    'ксii':           'red glass II',
-    'ксiii':          'red glass III',
-    'кciii':          'red glass III',
-    'kcii-12':        'red glass II-12',
-
-    'oс11':           'orange glass 11',
-    'oc11':           'orange glass 11',
-    'ос14':           'orange glass 14',
-    'oс14':           'orange glass 14',
-    'ocii':           'orange glass II',
-    'ос11':           'orange glass 11',
-
-    'с18':            'glass 18',
-
-    'сф':             'blue filter',
-    'cф':             'blue filter',
-    'сф4':            'blue filter 4',
-    'cф4':            'blue filter 4',
-
-    'ссii':           'blue glass II',
-    'ccii':           'blue glass II',
-
-    'сс4':            'blue glass 4',
-    'cc4':            'blue glass 4',
-    'cc14':           'blue glass 14',
-
-    'сзс':            'blue-green glass',
-    'cзc':            'blue-green glass',
-    'сзс-18':         'blue-green glass 18',
-
-    'пс7':            'glass 7',
-
-    'уфф':            'ultraviolet filter',
-
-    'уфс':            'ultraviolet glass',
-    'уфс1':           'ultraviolet glass 1',
-    'уфс2':           'ultraviolet glass 2',
-    'уфс3':           'ultraviolet glass 3',
-    'уфс-3':          'ultraviolet glass 3',
-    'уфс350':         'ultraviolet glass 350',
-    'уфс4':           'ultraviolet glass 4',
-
-    'фс5':            'violet glass 5',
-    'фс6':            'violet glass 6',
-    'фc6':            'violet glass 6',
-    'фс7':            'violet glass 7',
-    'фс8':            'violet glass 8',
-    'фс9':            'violet glass 9',
-
-    'синийфильтршотта':       'blue Schott filter',
-    'сфшотта':                'blue Schott filter',
-    'cфшотта':                'blue Schott filter',
-    'зфшотта':                'green Schott filter',
-    'уфс-2(фильтршотта)':     'ultraviolet glass 2 (Schott filter)',
-    'уфшотта':                'ultraviolet Schott filter',
-    'уффшотта':               'ultraviolet Schott filter',
-    'уфсшотта':               'ultraviolet Schott glass',
-    'фшотта':                 'Schott filter',
-    'фhalfa':                 'H_alpha filter',
-    'h_alf':                  'H_alpha',
-    'h_alpha':                'H_alpha',
-
-    'стекло':                 'glass',
-    'поляроид':               'polaroid (polarization)' ,
-    'поляроид':               'polaroid (polarization)' ,
-    'прозрачный':             'transparent' ,
-    'объективнаяпризма':      'objective prism',
-    'вращающаясядиафрагма':   'rotating diaphragm',
-    'agfan83(ик)':            'Agfan 83 (Infrared)',
-
-    'интефериционныйфильтр№2на': 'interference filter 2 (H_alpha)',
-}
-
 def translate_to_english(text):
     translator = Translator()
     translated = translator.translate(text, src='ru', dest='en')
     return translated.text
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~~~~OBJECT NAME~~~~~~~~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -267,7 +53,6 @@ def get_object_cards(raw_objects):
   >>> get_object_cards("NGC6611;NGC6618")
   {'OBJECT': 'NGC6611', 'OBJECT1': 'NGC6611', 'OBJECT2': 'NGC6618'}
   """
-
   objects=raw_objects.split(";")
   if len(objects)==1:
     return {"OBJECT": objects[0]}
@@ -282,7 +67,6 @@ def get_objtype_cards(raw_objtype):
   returns dictionary of keyword-value pairs for the FITS headers for our raw objects list
 
   """
-
   objtype=raw_objtype.split(";")
   if len(objtype)==1:
     return {"OBJTYPE": objtype[0]}
@@ -301,7 +85,6 @@ def get_filters_cards(filters):
   >>> get_filters_cards(["name1","name2"])
   {'FILTER': 'name1', 'FILTER1': 'name1', 'FILTER2': 'name2'}
   """
-
   if len(filters)==1:
     return {"FILTER": filters[0]}
   else:
@@ -1444,20 +1227,7 @@ def run_tests(*args):
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class PAHeaderAdder(api.AnetHeaderProcessor):
-  indexPath = "/usr/share/astrometry" #path to indexes
-  sp_total_timelimit = 180 #maximum time for field solving
-  sp_lower_pix = 3 #the smallest permissible pixel size in arcsecs
-  sp_upper_pix = 6 #the largest permissible pixel size in arcsecs
-  sp_endob = 100 # last object to be processed
-  sp_indices = ["index-41[01]*.fits"]# The file names from anet’s index directory you want to have used
 
-  sourceExtractorControl = """
-    DETECT_MINAREA   20
-    DETECT_THRESH    5
-    SEEING_FWHM      1.2
-  """#DETECT_MINAREA 20 (IDK)
-  #DETECT_THRESH 5 (SIGNAL 5SIGMA ABOVE THE NOISE IS SOURSE)
-  #SEEING_FWHM 1.2 (IDK)
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)  # Вызов конструктора родительского класса
@@ -1472,10 +1242,10 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
 
   def _createAuxiliaries(self, dd):
     log_path = os.path.join(dd.rd.resdir, "/var/gavo/inputs/logbook_archival", "logbook_galaxy.csv")
-    with open(log_path, "r", encoding="utf-8") as f:
-      rdr = pd.read_csv(f)
-      self.platemeta = rdr#dict((rec["ID"].lower().replace("с","c"), rec) for rec in rdr)
-      #identification by identification number
+    self.platemeta = pd.read_csv(log_path, encoding="utf-8")
+    # Приведение колонки "ID" в нижний регистр и замена "с" на "c"
+    # self.platemeta["ID"] = self.platemeta["ID"].str.lower().str.replace("с", "c", regex=False)
+
  
   def NOobjectFilter(self, inName):
     """throws out funny-looking objects from inName as well as objects
@@ -1506,60 +1276,26 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
     if "/" in srcName: 
       self.fits_name = srcName.split("/")[-1].replace("–","-").encode("utf-8").decode("utf-8") 
       #print(self.fits_name)
-    return "RA-ORIG" in hdr and "A_ORDER" in hdr
+    return "RA-ORIG" in hdr and "A_ORDER" in hdr and hdr
 
   def _mungeHeader(self, srcName, hdr):
-    name = srcName.split('_')#[path_part,path/object,date,exp,id.fit]
-    plateid = name[-1].split('.')[0].lower().replace("с","c").replace("-","").replace(" ","")
-    exptime_ = name[-2].lower()
+    name = srcName.split('_')
+    plateid = name[-1].split('.')[0].lower().replace("с", "c").replace("-", "").replace(" ", "")
     dateobs_ = name[-3].lower()
-    object_ = name[-4].split('/')[-1].lower().replace("-","").replace(" ","").replace('sky','').replace('ny','')
-    platedata = None
-    print('_______________')
-    print(plateid)
-    for i in range(0,len(self.platemeta)):
-      if str(self.platemeta['ID'][i]).lower().replace("с","c").replace(" ","").replace("-","") == plateid:
-        print('ID')
-        if str(self.platemeta['DATE-OBS'][i]).lower().strip()==dateobs_:
-          print('DATE')
-          if object_ in str(self.platemeta['OBJECT'][i]).lower().replace("-","").replace(" ",""):
-            print('OBJECT')
-            if exptime_ in str(self.platemeta['EXPTIME'][i]).lower():
-              print('****** DONE ******')
-              platedata = self.platemeta.iloc[i]
-            elif exptime_=='' and (self.platemeta['EXPTIME'][i]!=self.platemeta['EXPTIME'][i] or self.platemeta['EXPTIME'][i] is None):
-              print('****** DONE ******')
-              platedata = self.platemeta.iloc[i]
-            else:
-              continue
-            # Check if a matching entry was found
-          else:
-            continue
-        elif dateobs_=='' and (self.platemeta['DATE-OBS'][i]!=self.platemeta['DATE-OBS'][i] or self.platemeta['DATE-OBS'][i] is None):
-          print('DATE')
-          if object_ in str(self.platemeta['OBJECT'][i]).lower().replace("-","").replace(" ",""):
-            print('OBJECT')
-            if exptime_ in str(self.platemeta['EXPTIME'][i]).lower():
-              print('****** DONE ******')
-              platedata = self.platemeta.iloc[i]
-            elif exptime_=='' and (self.platemeta['EXPTIME'][i]!=self.platemeta['EXPTIME'][i] or self.platemeta['EXPTIME'][i] is None):
-              print('****** DONE ******')
-              platedata = self.platemeta.iloc[i]
-            else:
-              continue
-            # Check if a matching entry was found
-          else:
-            continue
-        else:
-          continue
-      else:
-        continue
-    if platedata is None:
-      with open("not_in_dj.txt", "a") as txt_file:
-        txt_file.write(srcName + "\n")
-      # Skip this object if platedata is not found
-      return  # This will skip the rest of the processing for this objec
+    object_ = name[-4].split('/')[-1].lower().replace("-", "").replace(" ", "").replace('sky', '').replace('ny', '')
+# Фильтрация записей в DataFrame
+    filtered_data = self.platemeta[
+        (self.platemeta["ID"] == plateid) &
+        (self.platemeta["DATE-OBS"].str.lower() == dateobs_) &
+        (self.platemeta["OBJECT"].str.lower().str.replace("-", "").str.replace(" ", "").str.contains(object_))
+    ]
 
+    if not filtered_data.empty:
+        platedata = filtered_data.iloc[0]  # Берем первую подходящую запись
+    else:
+        with open("not_in_dj.txt", "a") as txt_file:
+            txt_file.write(srcName + "\n")
+        return None
 
     thismeta = platedata
 
@@ -1570,10 +1306,6 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
           platedata[k] = None
     except AttributeError:
       print("AttributeError data")
-
-
-    #print('findmeaaaaa')
-
 
 
     #if some columns are renamed it is easier to fix it here
@@ -1590,8 +1322,6 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
     tme_lt    =platedata["TME-LT"]
     telescope =platedata["TELESCOPE"]
     observer  =platedata["OBSERVER"]
-    emulsion  =platedata["EMULSION"]
-    method    =platedata["METHOD"]
     filters   =platedata["FILTER"]
     obj_type  =platedata["OBJECT-TYPE"]
     focus     =platedata["FOCUS"]
@@ -1639,36 +1369,34 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
       camera = translate_to_english(camera)
     else:
       camera = None  
-    if platenotes is not None and platenotes==platenotes: 
-      platenotes = translate_to_english(platenotes.replace('\n', ';')).replace('\\n',' ').replace('\n',' ').replace(':','')
-    else:
-      platenotes = None 
-    if scannotes is not None and scannotes==scannotes: 
-      scannotes = translate_to_english(scannotes.replace('\n', ';')).replace('\\n',' ').replace('\n',' ').replace(':','')
-    else:
-      scannotes = None 
-    if obsnotes is not None and obsnotes==obsnotes: 
-      obsnotes = translate_to_english(obsnotes.replace('\n', ';')).replace('\\n',' ').replace('\n',' ').replace(':','-')
-    else:
-      obsnotes = None 
-    if notes is not None and notes==notes: 
-      notes = translate_to_english(notes.replace('\n', ';')).replace('\\n',' ').replace('\n',' ').replace(':','-')
-    else:
-      notes = None 
-    if skycond is not None and skycond==skycond: 
-      skycond = translate_to_english(skycond.replace('\n', ';')).replace('\\n',' ').replace('\n',' ').replace(':','-')
-    else:
-      skycond = None 
-    if spectrograph is not None and spectrograph==spectrograph: 
-      spectrograph = translit(spectrograph, 'ru', reversed=True)
-    else:
-      spectrograph = None  
+
+    def clean_and_translate(text):
+      """
+      Обрабатывает текст: удаляет лишние символы, выполняет перевод на английский.
+      """
+      if text and isinstance(text, str):
+          return translate_to_english(text.replace('\n', ';')).replace('\\n', ' ').replace('\n', ' ').replace(':', '')
+      return None
+    platenotes = clean_and_translate(platenotes)
+    scannotes = clean_and_translate(scannotes)
+    obsnotes = clean_and_translate(obsnotes)
+    notes = clean_and_translate(notes)
+    skycond = clean_and_translate(skycond)
+
+    def clean_and_translate(text, transliterate=False):
+      """
+      Обрабатывает текст: удаляет лишние символы, выполняет перевод на английский
+      и, при необходимости, транслитерацию.
+      """
+      if text and isinstance(text, str):
+          text = translate_to_english(text.replace('\n', ';')).replace('\\n', ' ').replace('\n', ' ').replace(':', '')
+          if transliterate:
+              text = translit(text, 'ru', reversed=True)
+          return text
+      return None
+    spectrograph = clean_and_translate(spectrograph, transliterate=True)
 
     instrume = f'intensifier: {eop if eop is not None else ""}; callimator: {callimator if callimator is not None else ""}, cathode: {cathode if cathode is not None else ""}, camera: {camera if camera is not None else ""}'
-
-
-    #print('findmewwwwww')
-
 
     #~~~~~~~~~~~~~~~~~~~COORDINATES~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~SIMBAD-QUERY~~~~~~~~~
@@ -1722,10 +1450,6 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
 
     #~~~~~~~~~~~~~~~~~~~DATE AND TIME ORIG~~~~~~~~~~~~~~~~~~~~~~
 
-    print('findmelllll')
-
-
-
     tms_lt_edit  = None
     tme_lt_edit  = None
     tms_lst_edit = None
@@ -1750,11 +1474,7 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
 
     else:
       date_obs_orig = None
-    #~~~~~~~~~~~~~~~~~~~DATE AND TIME EDITED (UT)~~~~~~~~~~~~~~~~~~~~~~#AttributeError, AttributeError("'list' object has no attribute 'strip'")
-
-
-    print('findmeööö')
-
+    #~~~~~~~~~~~~~~~~~~~DATE AND TIME EDITED (UT)~~~~~~~~~~~~~~~~~~~~~~
 
     time_format = ""
 
@@ -1868,10 +1588,6 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
 
     else: #we have nothing
       date_obs_edit = None
-   
-
-
-
  
     #~~~~~~~~~~~~~~~~~~~TRANSLITERATION ~~~~~~~~~~~~~~~~~~~~~~
     try:
@@ -1891,29 +1607,6 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
     print('findmeöpöö')
 
     #~~~~~~~~~~~~~~~~~~~DICTIONARY ~~~~~~~~~~~~~~~~~~~~~~
-    if telescope is not None and telescope==telescope:
-      telescope_edit = TELESCOPE_ENG[telescope.lower().replace(" ","")] #####################MAY BE WE SHOULD USE UPPER CASE TO COMPAIR VALUE WITH DICTIONARY
-    else:
-      telescope_edit = 'AZT-8'
-
-    if telescope_edit:
-      foclen = TELESCOPE_PARAM_DIC.get(telescope_edit)[0]
-      field = TELESCOPE_PARAM_DIC.get(telescope_edit)[2]
-      mirror_diameter =  TELESCOPE_PARAM_DIC.get(telescope_edit)[-1]
-    else:
-      foclen = None
-      field = None
-      mirror_diameter = None
-
-    plate_size = TELESCOPE_PARAM_DIC.get(telescope)
-      
-    if plate_size:
-      plate_size = plate_size[1]
-
-    if method is not None and method==method:
-      method_edit = METHOD_ENG[method.lower().replace(" ","")]
-    else:
-      method_edit = None
 
     if filters is not None and filters==filters:
       #Remove spaces, dots; replace commas and pluses with semicolon; use lower case
@@ -1927,12 +1620,18 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
     else:
       numexp = None
       variable_arguments = {"EXPTIME": None} 
-    #~~~~~~~~~~~~~~~HEADER WITH EDITED DATA~~~~~~~~~~~~~~~~~~
-    if date_obs is not None and date_obs==date_obs:
-      variable_arguments.update(get_date_cards(date_obs))
 
-    if objtype is not None and objtype==objtype:
-      variable_arguments.update(get_objtype_cards(objtype))
+    #~~~~~~~~~~~~~~~HEADER WITH EDITED DATA~~~~~~~~~~~~~~~~~~
+    def safe_update(arguments, key, value):
+      """
+      Добавляет ключ и значение в словарь, если значение не None или NaN.
+      """
+      if value is not None and value == value:  # Проверка на NaN
+          arguments[key] = value
+    safe_update(variable_arguments, "OBJTYPE", objtype)
+    safe_update(variable_arguments, "DATEORIG", date_obs)
+    safe_update(variable_arguments, "RA_ORIG", ra_edit[0] if ra_edit else None)
+    safe_update(variable_arguments, "DEC_ORIG", dec_edit[0] if dec_edit else None)
       
     if obj_name is not None and obj_name==obj_name:
       variable_arguments.update(get_object_cards(obj_name))#.split(";")[0]
@@ -1989,15 +1688,13 @@ class PAHeaderAdder(api.AnetHeaderProcessor):
       SITELONG = 43.17667,
       SITELAT = 76.96611,
       SITEELEV = 1450,
-      TELESCOP = telescope_edit,
+      TELESCOP = "AZT-8",
       NUMEXP = numexp,
       SCANAUTH = "Shomshekova S., Umirbayeva A., Moshkina S., Aktay L.",
       ORIGIN = "Contant",
-      FOCLEN = foclen,
+      FOCLEN = 11000,
       FOCUS = focus,
-      METHOD = method_edit,
-      FIELD = field,
-      OTA_DIAM = mirror_diameter,
+      OTA_DIAM = 700,
       SCANERS1 = 2400,
       SCANERS2 = 2400,
       PRE_PROC = "Cleaning from dust with a squirrel brush and from contamination from the glass (not an emulsion) with paper napkins",

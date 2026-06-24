@@ -1,388 +1,409 @@
 <resource schema="spectra_agn_archive" resdir=".">
-  <meta name="creationDate">2023-10-06T04:43:15Z</meta>
+	<meta name="creationDate">2024-12-05T12:39:57Z</meta>
 
-  <meta name="title">Archive of AGN spectral observations</meta>
-  <meta name="description">The archive of AGN spectral observations is obtained on AZT-8 telescope at the Fesenkov Astrophysical Institute (FAI), Almaty, Kazakhstan.
-It represents the result of observations for abot 25 years - from 1970 to 1995.  All observations were carried out at AZT-8 (D = 700 mm, F[main]  = 2800 mm, F[Cassegrain] = 11000 mm) with a high-power spectrograph. In 1967-68, on the basis of the image intensifier (https://doi.org/10.1080/1055679031000084795a) developed and assembled the spectrograph of the original design in the workshops of the FAI.
-To use the spectra, please, download raw .fit file of required object, date and exposure. The open 'Calibration frames' in Related links and then use them to calibrate object spectra frames. For more information about calibration process please visit https://github.com/ill-i/Spectra-Reduction.
-  </meta>
-  <meta name="subject">active-galactic-nuclei</meta>
-  <meta name="subject">history-of-astronomy</meta>
-  <meta name="creator">Fesenkov Astrophysical Institute</meta>
-  <meta name="instrument">AZT-8</meta>
-  <meta name="facility">Fesenkov Astrophysical Institute</meta>
-  <!--<meta name="source"></meta>-->
-  <meta name="contentLevel">Research</meta>
-  <meta name="type">Archive</meta>
-  <meta name="coverage.waveband">Optical</meta>
-  <meta name="ssap.dataSource">pointed</meta>
-  <meta name="ssap.creationType">archival</meta>
-  <meta name="productType">spectrum</meta>
-  <meta name="ssap.testQuery">MAXREC=1</meta>
+	<meta name="title">Archive of AGN spectral observations</meta>
+	<meta name="description">
+	The archive of AGN spectral observations is obtained on AZT-8 telescope at the Fesenkov Astrophysical Institute (FAI), Almaty, Kazakhstan.
+	It represents the result of observations for abot 25 years - from 1970 to 1995. All observations were carried out at AZT-8 (D = 700 mm, F[main] = 2800 mm, F[Cassegrain] = 11000 mm) with a high-power spectrograph. In 1967-68, on the basis of the image intensifier (https://doi.org/10.1080/1055679031000084795a) developed and assembled the spectrograph of the original design in the workshops of the FAI.
+	</meta>
 
-  <table id="raw_data" onDisk="True" adql="hidden"
-      namePath="//ssap#instance">
+	<meta name="subject">active-galactic-nuclei</meta>
+	<meta name="subject">history-of-astronomy</meta>
+	<meta name="creator">Fesenkov Astrophysical Institute</meta>
+	<meta name="instrument">AZT-8</meta>
+	<meta name="facility">Fesenkov Astrophysical Institute</meta>
 
-    <LOOP listItems="ssa_dateObs ssa_dstitle ssa_targname ssa_timeExt ssa_specstart ssa_specend ssa_length">
-      <events>
-        <column original="\item"/>
-      </events>
-    </LOOP>
+	<meta name="source">2023ExA....56..557S</meta>
+	<meta name="contentLevel">Research</meta>
+	<meta name="type">Archive</meta>
 
-    <mixin>//products#table</mixin>
-    <!-- remove this if your data doesn't have (usable) positions -->
-    <mixin>//ssap#plainlocation</mixin>
-    <!-- remove this if you don't have plainlocation or there is no
-      aperture -->
-    <mixin>//ssap#simpleCoverage</mixin>
-    <!-- the following adds a q3c index so obscore queries over s_ra
-      and s_dec are fast; again, remove this if you don't have useful
-      positions -->
+	<meta name="coverage.waveband">Optical</meta>
+	<meta name="ssap.dataSource">pointed</meta>
+	<meta name="ssap.creationType">archival</meta>
 
-    <!--<FEED source="//scs#splitPosIndex"
-      long="degrees(long(ssa_location))"
-      lat="degrees(lat(ssa_location))"
-      columns="ssa_location"/>-->
+	<!--<meta name="productType">spectrum</meta>-->
+		<meta name="productType">image/fits</meta>
+	<meta name="ssap.testQuery">MAXREC=1</meta>
 
-    <FEED source="//scs#splitPosIndex"
-      long="degrees(target_ra)"
-      lat="degrees(target_dec)"
-      columns="target_ra, target_dec"/>
+	<table id="raw_data" onDisk="True" adql="hidden">
 
-    <!-- the datalink column is mainly useful if you have a form-based
-      service.  You can dump this (and the mapping rule filling it below)
-      if you're not planning on web or don't care about giving them datalink
-      access. -->
+		<mixin>//products#table</mixin>
+		<mixin>//ssap#plainlocation</mixin>
+		<mixin>//ssap#simpleCoverage</mixin>
+		<FEED source="//scs#splitPosIndex"
+			long="degrees(long(ssa_location))"
+			lat="degrees(lat(ssa_location))"/>
+		<column name="ssa_dateObs" type="double precision"
+			unit="d"
+			ucd="time.epoch"
+			utype="ssa:Char.TimeAxis.Coverage.Location.Value"
+			description="Observation time (MJD)"/>
 
-    <column name="datalink" type="text"
-      ucd="meta.ref.url"
-      tablehead="Datalink"
-      description="A link to a datalink document for this spectrum."
-      verbLevel="15" displayHint="type=url">
-      <property name="targetType"
-       >application/fit;content=datalink</property>
-      <property name="targetTitle">Datalink</property>
-    </column>
+		<column name="ssa_dstitle"
+			type="text"
+			ucd="meta.title"
+			utype="ssa:DataID.Title"
+			description="Dataset title"/>
+		
+		<column name="ssa_targname"
+			type="text"
+			ucd="meta.id;src"
+			description="Target name"/>
 
-    <!--<column name="object" type="text"
-      ucd="meta.id;src"
-      tablehead="Objs."
-      description="Name of object from the observation log."
-    verbLevel="3"/>-->
+		<column name="ssa_length"
+			type="integer"
+			required="True"
+			ucd="meta.number"
+			utype="ssa:Dataset.Length"
+			description="Number of spectral points"/>
 
-    <column name="target_ra"
-      unit="deg" ucd="pos.eq.ra;meta.main"
-      tablehead="Target RA"
-      description="Right ascension of object from observation log."
-      verbLevel="1"/>
-    <column name="target_dec"
-      unit="deg" ucd="pos.eq.dec;meta.main"
-      tablehead="Target Dec"
-      description="Declination of object from observation log."
-      verbLevel="1"/>
+		<column name="ssa_timeExt"
+			type="double precision"
+			unit="s"
+			ucd="time.duration;obs.exposure"
+			description="Exposure time"/>
+		
+		<column name="ssa_specstart"
+			type="double precision"
+			unit="Angstrom"
+			ucd="em.wl;stat.min"
+			description="Start wavelength"/>
+		
+		<column name="ssa_specend"
+			type="double precision"
+			unit="Angstrom"
+			ucd="em.wl;stat.max"
+			description="End wavelength"/>
+		
+		<column name="ssa_specres"
+			type="double precision"
+			unit="Angstrom"
+			ucd="em.wl"
+			description="Wavelength step (sampling)"/>
+		
+		<column name="datalink"
+			type="text"
+			ucd="meta.ref.url"
+			tablehead="Datalink"
+			description="A link to a datalink document for this spectrum."
+			verbLevel="15" displayHint="type=url">
+			<property name="targetType"
+			 >application/fits;content=datalink</property>
+			<property name="targetTitle">Datalink</property>
+		</column>
+		
+		<column name="objects"
+			type="text"
+			ucd="meta.id;src"
+			tablehead="Name"
+			description="Name of galaxy"
+			verbLevel="1"/>
+		
+		<column name="ra"
+			type="double precision"
+			unit="deg"
+			ucd="pos.eq.ra;meta.main"
+			tablehead="RA"
+			description="The AGN's ICRS right ascension from SIMBAD (J2000)"
+			verbLevel="1"
+			displayHint="type=hms,sf=2"/>
+		
+		<column name="dec"
+			type="double precision"
+			unit="deg"
+			ucd="pos.eq.dec;meta.main"
+			tablehead="Dec"
+			description="The AGN's ICRS delination from SIMBAD (J2000)"
+			verbLevel="1"
+			displayHint="type=hms,sf=2"/>
+		
+		<column original="ssa_dateObs"
+			type="double precision"
+			unit="d"
+			ucd="time.epoch"
+			tablehead="Obs.date"
+			description="The date of observation from observational log in JD"
+			verbLevel="1"/>
+		
+		<column name="exp_time"
+			type="double precision"
+			unit="s"
+			ucd="time.duration;obs.exposure"
+			tablehead="Exp_time"
+			description="Exposure time"
+			verbLevel="1"/>
+		
+		<column name="spec_line"
+			type="double precision"
+			ucd="em.line"
+			tablehead="Spec_line"
+			description="The spectral line observed, such as H-alpha or H-beta."
+			verbLevel="1"/>
+		</table>
 
-    <column original="ssa_dateObs"
-      tablehead="Obs. date"
-      description="The date of observation from observational log. (Y-M-D .. Y-M-D)"/>
-  </table>
+	<data id="import">
+		<recreateAfter>make_view</recreateAfter>
+		<property key="previewDir">previews</property>
+		<!--<sources recurse="True"
+		 pattern="/var/gavo/inputs/astroplates/spectra_agn_archive/reducted_spectra_agn/*.fits"/>-->
+		<sources recurse="True"
+			pattern="/var/gavo/inputs/spectra_agn_archive/data/*.fits"/>
 
-  <!-- if you have data that is continually added to, consider using
-    updating="True" and an ignorePattern here; see also howDoI.html,
-    incremental updating.  -->
-  <data id="import">
-    <recreateAfter>make_view</recreateAfter>
-    <!--<property key="previewDir">previews</property>-->
-    <sources recurse="True"
-      pattern="/var/gavo/inputs/astroplates/spectra_agn_archive/data/*.fit"/>
+		<fitsProdGrammar qnd="True">
+		 <rowfilter procDef="//products#define">
+			<bind key="table">"\schema.raw_data"</bind>
+			<bind key="path">\inputRelativePath</bind>
+			<bind key="datalink">"\rdId#sdl"</bind>
+			<bind key="mime">"application/fits"</bind>
+			<bind key="preview">\standardPreviewPath</bind>
+			<bind key="preview_mime">"image/png"</bind>
+		 </rowfilter>
+		</fitsProdGrammar>
 
-    <!-- The following (and the datalink stuff) assumes you have
-      IRAF-style 1D arrays; if you have something even more flamboyant,
-      you'll have to change things here as well as in build_sdm_data;
-      you'll want to keep the products#define rowmaker, though. -->
-    <fitsProdGrammar qnd="True">
-      <rowfilter procDef="//products#define">
-        <bind key="table">"\schema.raw_data"</bind>
-      </rowfilter>
-    </fitsProdGrammar>
+		<make table="raw_data">
+		 <rowmaker idmaps="*">
+			<var key="specAx">getWCSAxis(@header_, 1, forceSeparable=True)</var>
+			<var key="raRaw">(@RA if @RA is not None else @OBJCTRA)</var>
+			<var key="decRaw">(@DEC if @DEC is not None else @OBJCTDEC)</var>
 
-    <make table="raw_data">
-      <rowmaker idmaps="*">
+			<map key="ra"><![CDATA[(
+			(parseAngle(str(@raRaw).replace(";", ":"), "hms", sepChar=":")*15)
+				if ((":" in str(@raRaw)) or (";" in str(@raRaw)))
+				else (float(@raRaw)*15 if float(@raRaw) <= 24 else float(@raRaw))
+			) if @raRaw else None]]></map>
 
+			<map key="dec"><![CDATA[(
+				parseAngle(str(@decRaw).replace(";", ":"), "dms", sepChar=":")
+					if ((":" in str(@decRaw)) or (";" in str(@decRaw)))
+					else float(@decRaw)
+			) if @decRaw else None]]></map>
 
-        <!-- the following maps assume the column list in the LOOP
-          above.  If you changed things there, you'll have to adapt
-          things here, too -->
-        <map key="ssa_dateObs">dateTimeToMJD(parseTimestamp(@DATE_OBS))</map>
-        <!--<map key="ssa_dateObs">parseTimestamp(@DATE_OBS)</map> -->
-        <map key="ssa_dstitle">@FILENAME</map> <!--"{} {}".format(%make a string halfway human-readable and halfway unique for each data set%)</map>-->
-        <map key="ssa_targname">@OBJECT</map>
-        <map key="ssa_specstart">getWCSAxis(@header_, 1).pixToPhys(1)*1e-10</map>
-        <map key="ssa_specend">getWCSAxis(@header_, 1).pixToPhys(getWCSAxis(@header_, 1).axisLength)*1e-10</map>
-        <map key="ssa_length">getWCSAxis(@header_, 1).axisLength</map>
+			<apply procDef="//ssap#fill-plainlocation">
+				<bind key="aperture">0.0363</bind>
+				<bind key="ra">@ra</bind>
+				<bind key="dec">@dec</bind>
+			</apply>
+			<map key="exp_time">float(@EXPTIME)</map>
+			<!--<map key="ssa_dateObs">float(@MJD) if @MJD is not None else float(@JD) if @JD is not None else None</map>-->
+			<map key="ssa_dateObs">
+				dateTimeToMJD(parseISODT(vars["DATE_OBS"]))
+			</map>
+			<map key="ssa_dstitle">"Spectrum of {} (ID: {}) taken on {}".format(@OBJECT or "unknown object", @IDN or "n/a", @DATE_OBS)</map>
+			
+			<map key="ssa_targname">@OBJECT</map>
+			<map key="ssa_specstart">@specAx.pixToPhys(1)</map>
+			<map key="ssa_specend">@specAx.pixToPhys(@specAx.axisLength)</map>
+			<map key="ssa_length">@specAx.axisLength</map>
+			<map key="ssa_timeExt">@EXPTIME</map>
+			<map key="ssa_specres">@CDELT1</map>
+			<map key="datalink">\dlMetaURI{sdl}</map>
+		 </rowmaker>
+		</make>
+	</data>
 
-        <map key="target_ra"  nullExcs="KeyError">@RA_DEG</map>
-        <map key="target_dec" nullExcs="KeyError">@DEC_DEG</map>
+	<table id="data" onDisk="True" adql="True">
 
-        <!--<var name="specAx">getWCSAxis(@header_, 1)</var>
-        <map key="ssa_specstart">specAx.pixToPhys(1)*1e-10</map>
-        <map key="ssa_specend">specAx.pixToPhys(@specAx.axisLength)*1e-10</map>
-        <map key="ssa_length">specAx.axisLength</map>-->
-        <map key="ssa_timeExt">@EXPTIME</map>
-        <!--<map key="ssa_specres">%expression to compute the typical spectral FWHM *in meters*%</map>-->
+		<meta name="_associatedDatalinkService">
+			<meta name="serviceId">sdl</meta>
+			<meta name="idColumn">prodtblAccref</meta>
+		</meta>
 
-        <map key="datalink">\dlMetaURI{sdl}</map>
+		<mixin
+			sourcetable="raw_data"
+			copiedcolumns="*"
+			ssa_aperture="0.0363"
+			ssa_fluxunit="'erg.cm**-2.s**-1.Angstrom**-1'"
+			ssa_spectralunit="'Angstrom'"
+			ssa_bandpass="'Optical'"
+			ssa_collection="'agn_azt8'"
+			ssa_fluxcalib="'RELATIVE'"
+			ssa_fluxucd="'phot.flux.density;em.wl'"
+			ssa_speccalib="'CALIBRATED'"
+			ssa_spectralucd="'em.wl'"
+			ssa_targclass="'AGN'"
+		>//ssap#view</mixin>
 
-        <!-- add mappings for your own custom columns here. -->
-      </rowmaker>
-    </make>
-  </data>
+		<mixin
+			calibLevel="1"
+			coverage="ssa_region"
+			oUCD="ssa_fluxucd"
+			emUCD="ssa_spectralucd"
+		>//obscore#publishSSAPMIXC</mixin>
 
-  <table id="data" onDisk="True" adql="True">
-    <!-- the SSA table (on which the service is based -->
+	</table>
 
-    <meta name="_associatedDatalinkService">
-      <meta name="serviceId">sdl</meta>
-      <meta name="idColumn">ssa_pubDID</meta>
-    </meta>
+	<data id="make_view" auto="False">
+		<make table="data"/>
+	</data>
 
-    <!-- again, the full list of things you can pass to the mixin
-      is at http://docs.g-vo.org/DaCHS/ref.html#the-ssap-view-mixin.
+	<coverage>
+		<updater sourceTable="data"/>
+	</coverage>
 
-      Things you already defined in raw_data are ignored here; you
-      can also (almost always) leave them out altogether here.
-      Defaulted attributes (the doc has "defaults to" for them) you
-      can remove.
-
-      The values for the ssa_ attributes below are SQL expressions – that
-      is, you need to put strings in single quotes.
-    -->
-    <mixin
-      sourcetable="raw_data"
-      copiedcolumns="*"
-      ssa_aperture="10/3600."
-      ssa_fluxunit="''"
-      ssa_spectralunit="'Pixel'"
-      ssa_bandpass="'Optical'"
-      ssa_collection="'FAI_AGN_archive'"
-      ssa_fluxcalib="'UNCALIBRATED'"
-      ssa_fluxucd="'phot.flux.density'"
-      ssa_speccalib="'UNCALIBRATED'"
-      ssa_spectralucd="'spect.line'"
-      ssa_targclass="'active-galactic-nuclei'"
-    >//ssap#view</mixin>
-
-    <mixin
-      calibLevel="1"
-      coverage="ssa_region"
-      sResolution="ssa_spaceres"
-      oUCD="ssa_fluxucd"
-      emUCD="ssa_spectralucd"
-      >//obscore#publishSSAPMIXC</mixin>
-  </table>
-
-  <data id="make_view" auto="False">
-    <make table="data"/>
-  </data>
-
-  <coverage>
-    <updater sourceTable="data"/>
-  </coverage>
-
-  <!-- This is the table definition *for a single spectrum* as used
-    by datalink.  If you have per-bin errors or whatever else, just
-    add columns as above. -->
-  <table id="instance" onDisk="False">
-    <mixin ssaTable="data"
-      spectralDescription="Wavelength"
-      fluxDescription="Optical density"
-      >//ssap#sdm-instance</mixin>
-    <meta name="description">The raw archival spectrum of AGN, uncalibrated. </meta>
-  </table>
-
-<!--
-  %this data item build spectrum *instances* (for datalink)
-  <data id="build_spectrum">
-    <embeddedGrammar>
-      <iterator>
-        <code>
-          # we receive a pubDID in self.sourceToken["ssa_pubDID"];
-          # the physical accref is behind its "?", potentially URL-encoded.
-
-          sourcePath = os.path.join(
-            base.getConfig("inputsDir"),
-            urllib.decode(
-              self.sourceToken["ssa_pubDID"].split('?', 1)[-1]))
-
-          #% add code returning rowdicts from sourcePath %
-          # this could be something like
-          colNames = ["spectral", "flux"]
-          with open(sourcePath) as f:
-           for ln in f:
-             yield dict(zip(colNames, [float(s) for s in ln.split()]))
-          # make sure any further the names match what you gave
-          # in the instance table def.
-        </code>
-      </iterator>
-    </embeddedGrammar>
-    <make table="instance">
-      <parmaker>
-        <apply procDef="//ssap#feedSSAToSDM"/>
-      </parmaker>
-    </make>
-  </data>
--->
+	<!-- This is the table definition *for a single spectrum* as used
+		by datalink.	If you have per-bin errors or whatever else, just
+		add columns as above. -->
+	<table id="instance" onDisk="False">
+		<mixin ssaTable="data"
+			spectralDescription="'Wavelength in Angstrom'"
+			fluxDescription="'Flux density in erg.cm**-2.s**-1.Angstrom**-1'"
+			>//ssap#sdm-instance</mixin>
+		<meta name="description" format="plain">
+			This table represents a single spectrum with flux density as a function of wavelength.</meta>
+	</table>
 
 
-<data id="build_spectrum">
-  <embeddedGrammar>
-    <iterator>
-      <code>
-        # we receive a pubDID in self.sourceToken["ssa_pubDID"];
-        # the physical accref is behind its "?", potentially URL-encoded.
+	<data id="build_spectrum">
+		<embeddedGrammar>
+			<iterator>
+				<code>
+				import os
+				from gavo import base
+				from gavo.utils import pyfits
+				
+				accref = self.sourceToken.get("prodtblAccref")
+				if not accref:
+					raise base.ValidationError("No prodtblAccref in datalink token", "prodtblAccref")
 
-        sourcePath = os.path.join(
-            base.getConfig("inputsDir"),
-            urllib.parse.unquote(
-                self.sourceToken["ssa_pubDID"].split('?', 1)[-1]))
+				sourcePath = os.path.join(base.getConfig("inputsDir"), accref)
 
-        # Using astropy to read the FITS file
-        from astropy.io import fits
-        with fits.open(sourcePath) as hdulist:
-            # Assuming the data you want is in the primary HDU.
-            # Adjust as needed.
-            data = hdulist[0].data
+				with pyfits.open(sourcePath, memmap=False) as hdul:
+					hdr = hdul[0].header
+					arr = hdul[0].data
 
-        # If data is 2D (an image), you'll need to decide how you want
-        # to handle it. This example simply returns the raw 2D data array.
-        for row in data:
-            yield {"image_data": row}
-      </code>
-    </iterator>
-  </embeddedGrammar>
-  <make table="instance">
-    <parmaker>
-      <apply procDef="//ssap#feedSSAToSDM"/>
-    </parmaker>
-  </make>
-</data>
+				crval1 = float(hdr.get("CRVAL1", 0.0))
+				crpix1 = float(hdr.get("CRPIX1", 1.0))
+				cdelt1 = float(hdr.get("CDELT1", 1.0))
 
-  <!-- the datalink service spitting out SDM spectra (and other formats
-    on request) -->
-  <service id="sdl" allowed="dlget,dlmeta">
-    <meta name="title">\schema Datalink Service</meta>
-    <datalinkCore>
-      <descriptorGenerator procDef="//soda#sdm_genDesc">
-        <bind key="ssaTD">"\rdId#data"</bind>
-      </descriptorGenerator>
-      <dataFunction procDef="//soda#sdm_genData">
-        <bind key="builder">"\rdId#build_spectrum"</bind>
-      </dataFunction>
-      <FEED source="//soda#sdm_plainfluxcalib"/>
-      <FEED source="//soda#sdm_cutout"/>
-      <FEED source="//soda#sdm_format"/>
-    </datalinkCore>
-  </service>
+				n = len(arr)
+				for i in range(n):
+					wl = crval1 + ((i+1) - crpix1) * cdelt1	# Angstrom
+					yield {"spectral": wl, "flux": float(arr[i])}
+				</code>
+			</iterator>
+		</embeddedGrammar>
 
-  <!-- a form-based service – this is made totally separate from the
-  SSA part because grinding down SSA to something human-consumable and
-  still working as SSA is non-trivial -->
-  <service id="web" defaultRenderer="form">
-    <meta name="shortName">\schema Web</meta>
+		<make table="instance">
+			<parmaker>
+				<apply procDef="//ssap#feedSSAToSDM"/>
+			</parmaker>
+		</make>
+	</data>
 
-    <dbCore queriedTable="data">
-      <condDesc buildFrom="ssa_location"/>
-      <!--<condDesc>
-        <inputKey name="ssa_dateObs"
-                  tablehead="Obs. date"
-                  description="The date of observation from observational log. (Y-M-D .. Y-M-D)"/>
-      </condDesc>-->
+	<!-- the datalink service spitting out SDM spectra (and other formats on request) -->
+	<service id="sdl" allowed="dlget,dlmeta">
+		<meta name="title">\schema Datalink Service</meta>
 
-      <!--<condDesc buildFrom="ssa_dateObs">
-        <inputKey name="ssa_dateObs"
-            tablehead="Observation date"
-            description="Enter the observation date range (Y-M-D .. Y-M-D)">
-        </inputKey>
-      </condDesc>-->
+		<datalinkCore>
+			<descriptorGenerator procDef="//soda#sdm_genDesc">
+				<bind key="ssaTD">"\rdId#data"</bind>
+			</descriptorGenerator>
 
-    <condDesc buildFrom="ssa_dateObs"/>
+			<dataFunction procDef="//soda#sdm_genData">
+				<bind key="builder">"\rdId#build_spectrum"</bind>
+			</dataFunction>
 
-     <condDesc>
-        <inputKey name="ssa_targname" type="text"
-          tablehead="Target Object"
-          description="Object being observed, Simbad-resolvable form"
-          ucd="meta.name">
-          <values fromdb="ssa_targname from spectra_agn_archive.data ORDER BY ssa_targname"/>
-        </inputKey>
-      </condDesc>
+			<FEED source="//soda#sdm_plainfluxcalib"/>
+			<FEED source="//soda#sdm_cutout"/>
+			<FEED source="//soda#sdm_format"/>
+		</datalinkCore>
+	</service>
 
-    </dbCore>
+	<service id="web" defaultRenderer="form">
+		<meta name="shortName">AGN Arch. SSA Web</meta>
 
-    <outputTable>
-      <autoCols> ssa_targname,
-                 target_ra, target_dec,
-                accref, ssa_dateObs </autoCols>
-      <!--<FEED source="//ssap#atomicCoords"/>-->
-    </outputTable>
-  </service>
+		<dbCore queriedTable="data">
+			<condDesc buildFrom="ssa_location"/>
+			<condDesc buildFrom="ssa_dateObs"/>
 
-  <service id="ssa" allowed="form,ssap.xml">
-    <meta name="shortName">\schema SSAP</meta>
-    <meta name="ssap.complianceLevel">full</meta>
+			<condDesc>
+				<inputKey original="data.ssa_targname" tablehead="Target Object">
+					<values fromdb="SELECT DISTINCT ssa_targname
+						FROM spectra_agn_archive.data
+						ORDER BY ssa_targname"/>
+				</inputKey>
+			</condDesc>
+		</dbCore>
 
-    <publish render="ssap.xml" sets="ivo_managed"/>
-    <publish render="form" sets="ivo_managed,local" service="web"/>
+		<outputTable>
+			<autoCols>
+				ssa_targname, accref, ssa_aperture, ssa_dateObs, datalink
+			</autoCols>
+			<FEED source="//ssap#atomicCoords"/>
+			<outputField original="ssa_specstart" displayHint="spectralUnit=Angstrom"/>
+			<outputField original="ssa_specend" displayHint="spectralUnit=Angstrom"/>
+		</outputTable>
+	</service>
 
-    <ssapCore queriedTable="data">
-     <!-- <property key="previews">auto%delete this line if you have no previews; else delete just this.%</property>-->
-      <FEED source="//ssap#hcd_condDescs"/>
-      <condDesc>
-        <inputKey name="POS" ucd="pos.eq" xtype="adql:POINT"/>
-      </condDesc>
-    </ssapCore>
-  </service>
+	<service id="ssa" allowed="ssap.xml">
+		<meta name="shortName">AGN Arch. SSAP</meta>
+		<meta name="ssap.complianceLevel">minimal</meta>
 
-  <regSuite title="spectra_agn_archive regression">
-    <!-- see http://docs.g-vo.org/DaCHS/ref.html#regression-testing
-      for more info on these. -->
+		<publish render="ssap.xml" sets="ivo_managed"/>
+		<publish render="form" sets="ivo_managed,local" service="web"/>
 
-    <regTest title="spectra_agn_archive SSAP serves some data">
-      <url REQUEST="queryData" PUBLISHERDID="%a value you have in ssa_pubDID%"
-        >ssa/ssap.xml</url>
-      <code>
-        <!-- to figure out some good strings to use here, run
-          dachs test -k SSAP -D tmp.xml q
-          and look at tmp.xml -->
-        self.assertHasStrings(
-          "%some characteristic string returned by the query%",
-          "%another characteristic string returned by the query%")
-      </code>
-    </regTest>
+		<ssapCore queriedTable="data">
+			<property key="previews">auto</property>
+			<FEED source="//ssap#hcd_condDescs"/>
+		</ssapCore>
+	</service>
 
-    <regTest title="spectra_agn_archive Datalink metadata looks about right.">
-      <url ID="%a value you have in ssa_pubDID%"
-        >sdl/dlmeta</url>
-      <code>
-        <!-- to figure out some good strings to use here, run
-          dachs test -k datalink -D tmp.xml q
-          and look at tmp.xml -->
-        self.assertHasStrings(
-          "%some characteristic string in the datalink meta%")
-      </code>
-    </regTest>
 
-    <regTest title="spectra_agn_archive delivers some data.">
-      <url ID="%a value you have in ssa_pubDID%"
-        >sdl/dlget</url>
-      <code>
-        <!-- to figure out some good strings to use here, run
-          dachs test -k "delivers data" -D tmp.xml q
-          and look at tmp.xml -->
-        self.assertHasStrings(
-          "%some characteristic string in the datalink meta%")
-      </code>
-    </regTest>
+	<regSuite title="spectra_agn_archive service regression">
 
-    <!-- add more tests: form-based service renders custom widgets, etc. -->
-  </regSuite>
+		<!-- 1) SSAP query by sky position: ensures service answers and returns a VOTable -->
+		<regTest title="SSAP responds to positional query and returns a VOTable">
+			<url>
+				ssa/ssap.xml?REQUEST=queryData&amp;FORMAT=votable
+				&amp;POS=7.2375222,45.6988611
+				&amp;SIZE=0.2
+				&amp;MAXREC=1
+			</url>
+			<code>
+				# We just check this looks like an SSA VOTable response.
+				self.assertHasStrings(
+					"VOTABLE",
+					"SimpleSpectralAccess")
+			</code>
+		</regTest>
+
+		<!-- 2) Datalink metadata: ensures dlmeta works for a known product identifier -->
+		<regTest title="Datalink dlmeta returns a VOTable with access info">
+			<url ID="spectra_agn_archive/data/s_MRK376_03-04.01.1976_2.8m_XIII-4-24.fits">
+				sdl/dlmeta
+			</url>
+			<code>
+				# Datalink responses are VOTables with access_url/semantics.
+				self.assertHasStrings(
+					"VOTABLE",
+					"access_url",
+					"semantics")
+			</code>
+		</regTest>
+
+		<!-- 3) Datalink dlget: ensures data function actually produces FITS bytes -->
+		<regTest title="Datalink dlget delivers FITS (SIMPLE card present)">
+			<url ID="spectra_agn_archive/data/s_MRK376_03-04.01.1976_2.8m_XIII-4-24.fits">
+				sdl/dlget
+			</url>
+			<code>
+				# Minimal strong signal that we got a FITS file, not HTML/traceback.
+				self.assertHasStrings("SIMPLE")
+				self.assertLacksStrings("Traceback", "Internal Error")
+			</code>
+		</regTest>
+
+		<!-- 4) Direct product delivery via getproduct: catches 500s in product delivery chain -->
+		<regTest title="Direct getproduct returns FITS (no 500/error page)">
+			<url>
+				getproduct/spectra_agn_archive/data/s_MRK376_03-04.01.1976_2.8m_XIII-4-24.fits
+			</url>
+			<code>
+				self.assertHasStrings("SIMPLE")
+				self.assertLacksStrings("Internal Error", "Traceback")
+			</code>
+		</regTest>
+
+	</regSuite>
+
 </resource>
-
