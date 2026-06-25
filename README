@@ -1,0 +1,12 @@
+These are the DaCHS resource descriptors of the data centre at
+Fesenkov Astrophysical Institute.
+
+This is intended to be cloned into DaCHS' rootdir as inputs, something
+like this::
+
+  cd /var/gavo
+  rmdir inputs
+  git clone git@github.com:ill-i/fai-inputs.git inputs
+
+You will then need to do a few symlinks into the common datastore.
+TBD: do we give the commands to do that here or in each individual repo.
