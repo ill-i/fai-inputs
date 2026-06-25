@@ -276,66 +276,25 @@ Primary and scientific data reduction was performed within the IRAF (Image Reduc
     <sources recurse="True" pattern="data/*.fits"/>
 
     <fitsProdGrammar qnd="True">
+      <rowfilter name="filter_publishable">
+        <setup><code>
+          with open(rd.getAbsPath("res/files-to-publish.txt")) as f:
+            filesToPublish = set(l.strip() for n, l in iterSimpleText(f))
+        </code></setup>
+        <code>
+          if rowIter.sourceToken.split("/")[-1] in filesToPublish:
+            yield row
+        </code>
+      </rowfilter>
+
       <rowfilter procDef="//products#define">
         <bind key="table">"\schema.raw_data"</bind>
+        <bind key="accref">\inputRelativePath{True}</bind>
         <bind key="fsize">180000</bind>
         <bind key="mime">"application/fits"</bind>
         <bind key="preview">\splitPreviewPath{png}</bind>
       </rowfilter>
-      
-      <rowfilter>
-        <code>
-          import os
-          import warnings
-          from astropy.io import fits as pyfits
-          from astropy.utils.exceptions import AstropyWarning
-          from astropy.coordinates import Angle
-          import astropy.units as u
 
-          # Relies strictly on the 'accref' key established by the macro above
-          rel_path = row.get("accref")
-          
-          # Initialize safe coordinate keys to prevent mapping crashes
-          row["safe_ra"] = None
-          row["safe_dec"] = None
-
-          if rel_path:
-              # Reconstruct absolute paths safely using DaCHS standard configuration
-              base_dir = base.getConfig("inputsDir")
-              file_path = os.path.join(base_dir, rel_path)
-              hdr_path = file_path + ".hdr"
-
-              if os.path.exists(hdr_path):
-                  with warnings.catch_warnings():
-                      warnings.simplefilter('ignore', AstropyWarning)
-                      try:
-                          hdr = pyfits.Header.fromtextfile(hdr_path)
-                          for k, v in hdr.items():
-                              if k and k not in ["COMMENT", "HISTORY"]:
-                                  # Prefix keys to expose them seamlessly to the rowmaker
-                                  row["hdr_" + k.replace("-", "_")] = v
-                      except Exception:
-                          pass
-
-          # Coordinate parsing and sanitization from sidecar or native headers
-          raw_ra = row.get("hdr_RA") or row.get("RA")
-          raw_dec = row.get("hdr_DEC") or row.get("DEC")
-
-          if raw_ra:
-              try:
-                  clean_ra = str(raw_ra).split('/')[0].strip()
-                  row["safe_ra"] = Angle(clean_ra, unit=u.hourangle).degree
-              except Exception: pass
-              
-          if raw_dec:
-              try:
-                  clean_dec = str(raw_dec).split('/')[0].strip()
-                  row["safe_dec"] = Angle(clean_dec, unit=u.deg).degree
-              except Exception: pass
-
-          yield row
-        </code>
-      </rowfilter>
     </fitsProdGrammar>
 
     <make table="raw_data">
@@ -350,14 +309,25 @@ Primary and scientific data reduction was performed within the IRAF (Image Reduc
         <var key="specMidM">(float(vars["waveMinM"]) + float(vars["waveMaxM"])) / 2.0</var>
         <var key="specResM">float(vars["specMidM"]) / float(vars.get("hdr_SPECRP") or 12000.0)</var>
 
+        <apply name="salvage_coordinates">
+          <code>
+            # sometimes upstream gives RA and DEC in sexagesimal, sometimes
+            # as float.  When it is sexagesimal, we turn it to decimal here.
+            if isinstance(@RA, str):
+              @RA = hmsToDeg(@RA, sepChar=':')
+            if isinstance(@DEC, str):
+              @DEC = hmsToDeg(@DEC, sepChar=':')
+          </code>
+        </apply>
+
         <apply procDef="//ssap#fill-plainlocation">
-          <bind key="ra">@safe_ra</bind>
-          <bind key="dec">@safe_dec</bind>
+          <bind key="ra">@RA</bind>
+          <bind key="dec">@DEC</bind>
           <bind key="aperture">float(vars.get("hdr_APERTURE") or 0.813)</bind>
         </apply>
 
         <map key="ssa_dateObs">dateTimeToMJD(parseTimestamp(vars.get("hdr_DATE_OBS") or vars.get("DATE_OBS")))</map>
-        <map key="ssa_dstitle">"{} eShel spectrum {}".format(vars["targetName"], str(vars.get("hdr_DATE_OBS") or vars.get("DATE_OBS") or "1900-01-01")[:10])</map>
+        <map key="ssa_dstitle">"{} echelle spectrum {}".format(vars["targetName"], str(vars.get("hdr_DATE_OBS") or vars.get("DATE_OBS") or "1900-01-01")[:10])</map>
         <map key="ssa_targname">vars["targetName"]</map>
 
         <map key="ssa_specstart">vars["waveMinM"]</map>
@@ -544,4 +514,25 @@ Primary and scientific data reduction was performed within the IRAF (Image Reduc
     </ssapCore>
   </service>
 
+  <regSuite title="tcp supergiant regression">
+    <regTest title="tco supergiants SSA returns something">
+      <url TARGETNAME='HD_28747' REQUEST="queryData">ssa/ssap.xml</url>
+      <code>
+        row = self.getFirstVOTableRow()
+        self.assertAlmostEqual(row['ssa_specmid'], 6.071904e-07)
+        self.assertAlmostEqual(row['ssa_dateObs'], 57042.14218651643)
+        self.assertTrue(row["accref"].endswith("getproduct/tco_hot_supergiants/"
+          "data/targets/2015/2015-01-20/HD28747_20150119_3850_6715.fits"),
+          "Accref is wrong.")
+      </code>
+    </regTest>
+
+<!--
+    <regTest title="tco supergiants do not leak other data">
+      <url TARGETNAME='HD_28747' REQUEST="queryData">ssa/ssap.xml</url>
+      <code>
+        self.assertEqual(len(self.getVOTableRows()), 0)
+      </code>
+    </regTest> -->
+  </regSuite>
 </resource>

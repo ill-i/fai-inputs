@@ -1,0 +1,7 @@
+This is a partial publication of TCO Echelle spectra.  
+
+We only want to publish spectra of hot supergiants here;
+res/files-to-publish.txt has the names of such files, all others are discarded
+in a row filter.
+
+==SETUP== ln -s /observations/others/tco/spectra_echelle data
