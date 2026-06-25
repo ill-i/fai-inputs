@@ -1,0 +1,5 @@
+/data
+*.swp
+*.fits
+object.csv
+calib_frames
