@@ -99,7 +99,7 @@
     updating="True" and an ignorePattern here; see also howDoI.html,
     incremental updating -->
   <data id="import">
-    <sources pattern="/var/gavo/inputs/astroplates/agn_photometry/data/*.fit"/>
+    <sources recurse="True" pattern="data/*.fit"/>
 
     <!-- the fitsProdGrammar should do it for whenever you have
     halfway usable FITS files.  If they're not halfway usable,

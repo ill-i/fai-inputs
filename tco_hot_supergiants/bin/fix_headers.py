@@ -1,3 +1,5 @@
+import datetime
+
 from gavo import api
 from gavo.utils import fitstools
 
@@ -17,6 +19,8 @@ class PositionPeeker(api.HeaderProcessor):
   def _mungeHeader(self, srcName, hdr):
     hdr.cards[hdr.index("RA")].verify("fix")
     hdr.cards[hdr.index("DEC")].verify("fix")
+    hdr["HISTORY"] = "Header fixed by fai.kz {}".format(
+            datetime.date.today().isoformat())
     return hdr
 
 
