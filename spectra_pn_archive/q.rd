@@ -227,13 +227,15 @@
     on request) -->
   <service id="sdl" allowed="dlget,dlmeta">
     <meta name="title">PN Datalink Service</meta>
+    <meta name="description">Datalink for the Planetary Nebula spectra from
+      AZT-8; you can do cutouts and simple calibration here.</meta>
     <datalinkCore>
       <descriptorGenerator procDef="//soda#sdm_genDesc">
         <bind key="ssaTD">"\rdId#data"</bind>
       </descriptorGenerator>
-      <!--<dataFunction procDef="//soda#sdm_genData">
+      <dataFunction procDef="//soda#sdm_genData">
         <bind key="builder">"\rdId#build_spectrum"</bind>
-      </dataFunction>-->
+      </dataFunction>
       <FEED source="//soda#sdm_plainfluxcalib"/>
       <FEED source="//soda#sdm_cutout"/>
       <FEED source="//soda#sdm_format"/>
@@ -283,42 +285,41 @@
   <regSuite title="spectra_pn_archive regression">
 
     <!-- 1 SSAP отвечает и отдаёт хотя бы одну запись -->
-    <regTest title="SSAP returns at least one record">
-      <url REQUEST="queryData" MAXREC="1">ssa/ssap.xml</url>
+    <regTest title="SSAP returns a well-known record">
+      <url REQUEST="queryData" TARGETNAME="PN M1-77"
+        TIME="1981-09-29T17:45:00/1981-09-29T18:15:00">ssa/ssap.xml</url>
       <code><![CDATA[
-  # Базовые маркеры SSA-ответа
-  self.assertHasStrings("VOTABLE", "RESOURCE", "TABLE")
-  self.assertHasStrings("ssa_pubDID", "ssa_targname", "ssa_aperture")
-
-  # Достаём первый ssa_pubDID из таблицы данных и кладём в контекст
-  import re
-  m = re.search(r'(ivo://[^<\s]+)', self.resultText)
-  if not m:
-      # запасной вариант: иногда pubDID бывает как http(s) ссылочный id
-      m = re.search(r'(http[s]?://[^<\s]+)', self.resultText)
-  self.assertTrue(m, "No ssa_pubDID found in SSAP MAXREC=1 response")
-  self.context["PUBDID"] = m.group(1)
+        row = self.getFirstVOTableRow()
+        self.assertAlmostEqual(row['ssa_specend'], 5.995006e-07)
+        self.assertEqual(row["ssa_pubDID"],
+          'ivo://fai.kz/~?spectra_pn_archive/data/s_M1-77_29-30.09.1981_5m_2548.fits')
   ]]></code>
     </regTest>
 
     <!-- 2 Datalink-метаданные выглядят правдоподобно -->
     <regTest title="Datalink metadata looks sane">
-      <url ID="%(PUBDID)s">sdl/dlmeta</url>
-      <code><![CDATA[
-  self.assertHasStrings("VOTABLE", "RESOURCE", "LINK")
-  self.assertHasStrings("#this", "application/x-votable+xml;content=datalink")
-  ]]></code>
+      <url ID="ivo://fai.kz/~?spectra_pn_archive/data/s_M1-77_29-30.09.1981_5m_2548.fits">sdl/dlmeta</url>
+      <code>
+        links = self.datalinkBySemantics()
+        self.assertEqual(set(links), {'#preview', '#this', '#proc'})
+        self.assertTrue("cutouts and simple calibration" 
+          in links["#proc"][0]["description"],
+          "#proc description broken")
+      </code>
     </regTest>
 
     <!-- 3 Datalink выдаёт сами данные (SDM-экземпляр спектра) -->
     <regTest title="Datalink delivers spectrum data">
-      <url ID="%(PUBDID)s">sdl/dlget</url>
-      <code><![CDATA[
-  # Должен прийти VOTable с колонками spectral/flux (как объявлено в instance)
-  self.assertHasStrings("VOTABLE", "TABLE", "FIELD name=\"spectral\"", "FIELD name=\"flux\"")
-  # И немного числовых данных
-  self.assertHasStrings("<TR>", "<TD>")
-  ]]></code>
+      <url ID="ivo://fai.kz/~?spectra_pn_archive/data/s_M1-77_29-30.09.1981_5m_2548.fits">sdl/dlget</url>
+      <code>
+        rows = self.getVOTableRows()
+        self.assertAlmostEqual(rows[0]["spectral"], 4439.69)
+        self.assertEqual(rows[1]["flux"], -451.50506591796875)
+
+        self.assertHasStrings(
+          'utype="spec:Spectrum.Char.FluxAxis.Calibration"',
+          'value="CALIBRATED"')
+      </code>
     </regTest>
 
   </regSuite>
