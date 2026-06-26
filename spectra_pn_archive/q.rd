@@ -196,8 +196,7 @@
         <code>
           sourcePath = os.path.join(
             base.getConfig("inputsDir"),
-            urllib.parse.unquote(
-              self.sourceToken["ssa_pubDID"].split('?', 1)[-1]))
+            self.sourceToken["accref"])
           with pyfits.open(sourcePath) as hdul:
             header = hdul[0].header
             data = hdul[0].data
