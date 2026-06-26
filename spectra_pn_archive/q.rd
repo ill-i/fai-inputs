@@ -86,7 +86,6 @@
       tablehead="Exp_time"
       description="Total exposure time (seconds)"
       verbLevel="5"/>
-
   </table>
 
   <data id="import">
@@ -238,6 +237,14 @@
       <FEED source="//soda#sdm_plainfluxcalib"/>
       <FEED source="//soda#sdm_cutout"/>
       <FEED source="//soda#sdm_format"/>
+
+      <metaMaker semantics="#derivation">
+        <code>
+          yield descriptor.makeLink(
+            makeAbsoluteURL("\rdId/sdl/dlget?ID="+urllib.parse.quote(descriptor.pubDID)),
+              description="This spectrum as a VOTable in the Spectral Data Model")
+        </code>
+      </metaMaker>
     </datalinkCore>
   </service>
 
@@ -265,6 +272,19 @@
       <FEED source="//ssap#atomicCoords"/>
       <outputField original="ssa_specstart" displayHint="spectralUnit=Angstrom"/>
       <outputField original="ssa_specend" displayHint="spectralUnit=Angstrom"/>
+      <outputField name="dlurl" select="accref"
+        tablehead="Datalink Access"
+        description="URL of a datalink document for the dataset
+          (cutouts, different formats, etc)">
+        <formatter>
+          yield T.a(href=getDatalinkMetaLink(
+            rd.getById("sdl"), data)
+            )["Datalink"]
+        </formatter>
+        <property name="targetType"
+          >application/x-votable+xml;content=datalink</property>
+        <property name="targetTitle">Datalink</property>
+      </outputField>
     </outputTable>
   </service>
 
