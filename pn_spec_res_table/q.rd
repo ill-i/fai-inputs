@@ -509,8 +509,21 @@
       <condDesc buildFrom="age_year"/>
     </dbCore>
   </service>
+
   <regSuite title="pn_spec_res_table regression">
- 
+
+  <regTest title="Test TAP access by date-obs">
+    <url parSet="TAP"
+          QUERY = "SELECT * from pn_spec_res_table.main
+          WHERE object='PK232-4.7' AND obs_year=1971"
+          >/tap/sync</url>
+   <code>
+    row = self.getFirstVOTableRow()
+    self.assertAlmostEqual(row['F_H_beta'],1.3)
+    self.assertAlmostEqual(row['mass_prog_star'],1.25)
+    self.assertEqual(row['model_number'],3)
+   </code>
+  </regTest>
 
   </regSuite>
 </resource>
