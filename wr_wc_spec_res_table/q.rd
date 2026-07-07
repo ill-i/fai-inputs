@@ -1386,7 +1386,17 @@ yield "UPPER(sp) LIKE %%(%s)s" % key
 
 	<regSuite title="wr_spec_result (WC and WO) regression">
 
-
+    <regTest title="Test TAP">
+     <url parSet="TAP"
+          QUERY="SELECT * FROM wr_wc_wo_sequence.main
+          WHERE object='WR 4' AND date_obs='2021-01-27'"
+          >/tap/sync</url>
+     <code>
+        row = self.getFirstVOTableRow()
+        self.assertAlmostEqual(row['B_mag'],9.979999542236328)
+        self.assertAlmostEqual(row['Rc_mag'],9.279999732971191)
+     </code>
+    </regTest>
 	</regSuite>
 
 </resource>

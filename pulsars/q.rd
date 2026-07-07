@@ -762,6 +762,6 @@
 		<publish sets="ivo_managed" render="scs.xml"/>
 	</service>
 </resource>
-	   
+<!--==SETUP== add regtest into pulsars q.rd-->	   
 <!-- vi:ai:sta:ts=4:sw=4 
 -->

@@ -354,7 +354,7 @@
   </service>
 
   <regSuite title="fai_agn regression">
-
+<!-- ==SETUP== fix tests for fai_agn-->
     <regTest title="fai_agn SIAP serves some data">
       <url POS="345.8,8.9" SIZE="0.1,0.1" dateObs="57635.8214/"
         >i/siap.xml</url>
