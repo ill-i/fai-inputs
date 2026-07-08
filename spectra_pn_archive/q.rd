@@ -340,7 +340,7 @@
           'value="CALIBRATED"')
       </code>
     </regTest>
-
+<!-- ==SETUP== fix regtest-->
   </regSuite>
 
 </resource>

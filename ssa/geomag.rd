@@ -166,5 +166,6 @@
 					'title="Magnetic field component in the Y direction."')
 			]]></code>
 		</regTest>
-	</regSuite>
+<!-- ==SETUP== fix regtest-->
+  </regSuite>
 </resource>

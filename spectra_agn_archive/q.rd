@@ -403,7 +403,7 @@
 				self.assertLacksStrings("Internal Error", "Traceback")
 			</code>
 		</regTest>
-
+<!-- ==SETUP== fix regtest-->
 	</regSuite>
 
 </resource>

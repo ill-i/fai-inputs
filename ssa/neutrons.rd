@@ -129,4 +129,6 @@
 		</regTest>
 
 	</regSuite>
+<!-- ==SETUP== fix regtest-->
+
 </resource>

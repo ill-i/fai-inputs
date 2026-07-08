@@ -153,4 +153,7 @@
         <publish sets="local,ivo_managed" render="form"/>
         <publish sets="ivo_managed" render="scs.xml"/>
     </service>
+
+<!-- ==SETUP== fix regtest-->
+
 </resource>
