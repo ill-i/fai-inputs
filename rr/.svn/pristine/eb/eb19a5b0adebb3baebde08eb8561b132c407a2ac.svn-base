@@ -1,0 +1,193 @@
+Find all TAP services; return their accessURLs
+----------------------------------------------
+
+::
+
+  SELECT ivoid, url 
+  FROM rr.capability 
+    NATURAL JOIN rr.accessurl 
+  WHERE standard_id='ivo://ivoa.net/std/TAP'
+
+Find all SIA services that might have spiral galaxies 
+-----------------------------------------------------
+
+This is a tricky one; a keyword query here obviously doesn't help much;
+still, it's the closest we can get with what's available in the registry
+alone.  Also note that we should have an IR-type text match here; we
+probably can require a has_word function on registry servers rather than
+use the LIKE-hack below::
+
+  SELECT ivoid, url 
+  FROM rr.capability 
+    NATURAL JOIN rr.resource
+    NATURAL JOIN rr.accessurl 
+  WHERE standard_id='ivo://ivoa.net/std/SIA'
+    AND (
+      subject LIKE '%spiral%'
+      OR res_description LIKE '%spiral%')
+
+
+Find all SIA services that provides infrared images
+---------------------------------------------------
+
+The following scheme wouldn't work for UV (since it would clash with
+EUV).  We'll want to mandate a user defined function ivo_hasword (or
+similar) to make this work properly.
+
+  SELECT ivoid, url 
+  FROM rr.capability 
+    NATURAL JOIN rr.resource
+    NATURAL JOIN rr.accessurl 
+  WHERE standard_id='ivo://ivoa.net/std/SIA'
+    AND waveband LIKE '%Infrared%'
+
+
+Find all searchable catalogs that provide a column containing redshift
+----------------------------------------------------------------------
+
+::
+
+  SELECT ivoid, url 
+  FROM rr.capability 
+    NATURAL JOIN rr.tablecolumn
+    NATURAL JOIN rr.accessurl 
+  WHERE standard_id='ivo://ivoa.net/std/ConeSearch'
+    AND ucd='src.redshift'
+
+
+Find all the resources that are registered by some publisher
+------------------------------------------------------------
+
+This needs some clarification; if it is intended to find out what the
+originating registry is, I'd say that's futile since registries mirror
+their entries.
+
+Finding out what records come from a given authority, that's easy::
+
+  SELECT ivoid 
+  FROM rr.resource
+  WHERE ivoid LIKE 'ivo://org.gavo.dc%'
+
+Also easy: What registry records are there from a given publisher::
+
+  SELECT ivoid 
+  FROM rr.resource
+  WHERE publisher_ivoid='ivo://ned.ipac/NED'
+
+or::
+
+  SELECT ivoid 
+  FROM rr.resource
+  WHERE publisher_name LIKE '%gavo%'
+
+Finding out the registry responsible for an authority currently is not
+supported.  Doing cleanly would require a table managed_authority (which
+is already there internally at GAVO DC, but I'd think it doesn't need to
+be public.
+
+
+Find all searchable registries
+------------------------------
+
+...and return the accessURLs to their search interfaces.
+
+This assumes we have a data model id assigned::
+
+  SELECT url 
+  FROM rr.capability_detail 
+    NATURAL JOIN rr.capability 
+    NATURAL JOIN rr.accessurl 
+  WHERE detail_utype='Resource.capability.dataModel.ivoId' 
+    AND detail_value='ivo://ivoa.net/std/RegistryModel-1.0'
+
+
+Find all resources of a particular type
+---------------------------------------
+
+::
+
+  SELECT *
+  FROM rr.resource
+  WHERE resource_type='vstd:Standard'
+
+
+Return the resource having a particular identifier
+--------------------------------------------------
+
+If "resource" means "the complete resource record" here, that doesn't
+work right now.  You'd have to go through OAI-PMH (which I consider
+fair, btw.).
+
+
+Find all TAP services exposing a table...
+-----------------------------------------
+
+...having some word in the description and a column with a given UCD::
+
+  SELECT ivoid, url, name, ucd, description
+  FROM rr.capability 
+    NATURAL JOIN rr.accessurl
+    NATURAL JOIN rr.tablecolumn
+    NATURAL JOIN rr.rsctable
+  WHERE standard_id='ivo://ivoa.net/std/TAP'
+    AND table_description like '%uasar%'
+    AND ucd='phot.mag;em.opt.V'
+
+
+Find all SSAP services that provide time series, not spectra
+------------------------------------------------------------
+
+How do you tell, from VOResource?
+
+
+Find all SSAP services that provide theoretical spectra, not observational ones
+-------------------------------------------------------------------------------
+
+::
+
+  SELECT url 
+  FROM rr.capability_detail 
+    NATURAL JOIN rr.capability 
+    NATURAL JOIN rr.accessurl 
+  WHERE detail_utype='Resource.capability.dataSource' 
+    AND standard_id='ivo://ivoa.net/std/SSA'
+    AND detail_value='theory'
+
+
+Find all services of any type that provide galaxy spectra, not stellar ones
+---------------------------------------------------------------------------
+
+See above, `Find all SIA services that might have spiral galaxies`_
+
+
+Find all ConeSearch services that provide stellar distance information
+----------------------------------------------------------------------
+
+::
+
+  SELECT url, name, ucd, description
+  FROM rr.capability 
+    NATURAL JOIN rr.accessurl
+    NATURAL JOIN rr.tablecolumn
+  WHERE standard_id='ivo://ivoa.net/std/ConeSearch'
+    AND ucd like 'pos.parallax%'  
+
+(ok, that would not only catch stellar, but that's again an issue of
+proper keywords).
+
+
+Find all services that provide theoretical isochrones
+-----------------------------------------------------
+
+How do you tell, from VOResource?
+
+
+The service at X is down, who do I call?
+----------------------------------------
+
+::
+
+  SELECT contact_email 
+  FROM rr.resource 
+    NATURAL JOIN rr.accessurl 
+  WHERE url LIKE 'http://datanet.csiro.au:80/astrogrid-registry/%';

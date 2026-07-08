@@ -1,0 +1,69 @@
+TODO: drop  the security_method_id column some time when RegTAP 1.1 is
+REC.
+
+The "relational registry", i.e. a full searchbable registry that harvests
+all known publishing registries.
+
+This resource needs the additional package python-lockfile.
+
+This service also needs the pg_trgm extension (Debian: postgresql-contrib).
+Hence, before importing, run
+
+  CREATE EXTENSION pg_trgm;
+
+For a first import (lengthy, so better run it within screen or similar),
+say
+
+psql -c "CREATE EXTENSION IF NOT EXISTS pg_trgm" gavo
+gavo imp q create_registries create
+python bin/harvestRofR.py
+python bin/harvestRegistries.py  # this will run a long time
+# you can watch what's going on in logs/dcInfos
+gavo imp q import # this will run a long time, too
+
+That's about it; the registry should update itself while the server is
+running.
+
+
+If you change the data model but want to keep registries meta and
+their responses, run
+
+gavo imp q create import
+
+
+If a registry had a temporary fault and you want to re-harvest starting from
+the time of the failure, do something like
+
+update rr.registries set last_inc_harvest='2014-02-01'
+	where ivoid='ivo://cds.vizier/registry';
+
+in the database and wait for the next re-harvest.
+
+
+
+If an authority moves from one registry to another and the old registry
+fails to remove its claim to the authority in time, use AUTHORITY_OVERRIDES
+in bin/harvestRofR.py
+
+
+A continuous pain is the mapping between prefixes and namespaces people
+use (curse on the idiot that introduced namespaced attribute values
+outside of XSLT!).  When this mapping is out of whack, use
+bin/maintain-prefixes.py to conveniently edit it.
+
+
+Recall for some important terms improves when postgres is told about a
+few synonyms.  To install them, copy regtap.syn to
+/usr/share/postgresql/<server_version>/tsearch_data/
+
+Then run:
+
+  CREATE TEXT SEARCH DICTIONARY regtap_syns (
+    TEMPLATE = synonym,
+    SYNONYMS = regtap
+  );
+  ALTER TEXT SEARCH CONFIGURATION english
+    ALTER MAPPING FOR asciiword
+    WITH regtap_syns, english_stem;
+
+You need to do this after every database upgrade.

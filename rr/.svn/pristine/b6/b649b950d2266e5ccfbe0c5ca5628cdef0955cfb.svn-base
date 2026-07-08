@@ -1,0 +1,756 @@
+<?xml version="1.0"?>
+<oai:OAI-PMH xmlns:oai="http://www.openarchives.org/OAI/2.0/" xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0" xmlns:ssap="http://www.ivoa.net/xml/SSA/v1.1" xmlns:vg="http://www.ivoa.net/xml/VORegistry/v1.0" xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" xmlns:vs="http://www.ivoa.net/xml/VODataService/v1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://vo.ari.uni-heidelberg.de/docs/schemata/OAI-PMH.xsd http://www.ivoa.net/xml/RegistryInterface/v1.0 http://vo.ari.uni-heidelberg.de/docs/schemata/RegistryInterface-v1.0.xsd http://www.ivoa.net/xml/SSA/v1.1 http://vo.ari.uni-heidelberg.de/docs/schemata/SSA-v1.3.xsd http://www.ivoa.net/xml/VORegistry/v1.0 http://vo.ari.uni-heidelberg.de/docs/schemata/VORegistry-v1.0.xsd http://www.ivoa.net/xml/VOResource/v1.0 http://vo.ari.uni-heidelberg.de/docs/schemata/VOResource-v1.1.xsd http://www.ivoa.net/xml/VODataService/v1.1 http://vo.ari.uni-heidelberg.de/docs/schemata/VODataService-v1.1.xsd">
+  <oai:responseDate>2020-03-10T16:34:06Z</oai:responseDate>
+  <oai:request metadataPrefix="ivo_vor" verb="GetRecord"/>
+  <oai:GetRecord>
+    <oai:record>
+      <oai:header>
+        <oai:identifier>ivo://org.gavo.dc/bgds/l/ssa</oai:identifier>
+        <oai:datestamp>2020-03-10T16:32:02Z</oai:datestamp>
+      </oai:header>
+      <oai:metadata>
+        <ri:Resource created="2018-07-18T11:44:26Z" status="active" updated="2020-03-10T16:32:02Z" xsi:type="vs:CatalogService">
+          <title>BGDS light curves SSA</title>
+          <shortName>BGDS TS SSAP</shortName>
+          <identifier>ivo://org.gavo.dc/bgds/l/ssa</identifier>
+          <curation>
+            <publisher altIdentifier="https://orcid.org/fake-fake"
+            	>The GAVO DC team</publisher>
+            <contributor altIdentifier="https://orcid.org/msdemlei-fake"
+            	>Markus Demleitner</contributor>
+            <creator>
+              <name altIdentifier="http://orcid.org/moritz-fake"
+              	>Hackstein, M.</name>
+            </creator>
+            <creator>
+              <name>Haas, M.</name>
+            </creator>
+            <creator>
+              <name>Fein, C.</name>
+            </creator>
+            <creator>
+              <name>Chini, R.</name>
+            </creator>
+            <contact>
+              <name>GAVO Data Center Team</name>
+              <address>M&#xF6;nchhofstrasse 12-14, D-69120 Heidelberg</address>
+              <email>gavo@ari.uni-heidelberg.de</email>
+              <telephone>++49 6221 54 1837</telephone>
+            </contact>
+          </curation>
+          <content>
+            <subject>Astrophotography</subject>
+            <subject>Surveys</subject>
+            <subject>Galactic plane</subject>
+            <subject>Variable star</subject>
+            <subject>CCD photometry</subject>
+            <description>This service exposes the light curves of stars produced by the Bochum
+Galactic Disk Survey; several million light curves are provided in the
+SDSS i and r bands. The lightcurves are published per-band and are
+also available through obscore.</description>
+            <source format="bibcode">2015AN....336..590H</source>
+            <referenceURL>http://dc.zah.uni-heidelberg.de/bgds/l/ssa/info</referenceURL>
+            <type>Survey</type>
+            <contentLevel>Research</contentLevel>
+            <relationship>
+              <relationshipType>served-by</relationshipType>
+              <relatedResource ivo-id="ivo://org.gavo.dc/tap"
+              	altIdentifier="doi:10.fake/tapservice"
+              	>GAVO Data Center TAP service</relatedResource>
+            </relationship>
+          </content>
+          <rights>
+If you use GDS data, please cite
+:bibcode:`2015AN....336..590H`.</rights>
+          <capability standardID="ivo://ivoa.net/std/SSA" xsi:type="ssap:SimpleSpectralAccess">
+            <interface role="std" xsi:type="vs:ParamHTTP">
+              <accessURL use="base">http://dc.zah.uni-heidelberg.de/bgds/l/ssa/ssap.xml?</accessURL>
+              <mirrorURL>https://dc.zah.uni-heidelberg.de/bgds/l/ssa/ssap.xml?</mirrorURL>
+              <queryType>GET</queryType>
+              <resultType>application/x-votable+xml</resultType>
+              <param std="true">
+                <name>POS</name>
+                <description>ICRS position of target object</description>
+                <unit>deg</unit>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>SIZE</name>
+                <description>Size of the region of interest around POS</description>
+                <unit>deg</unit>
+                <dataType>real</dataType>
+              </param>
+              <param std="true">
+                <name>BAND</name>
+                <description>Wavelength (range) of interest (or symbolic bandpass names)</description>
+                <unit>m</unit>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>FORMAT</name>
+                <description>MIME type of the file served</description>
+                <ucd>meta.code.mime</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>APERTURE</name>
+                <description>Angular diameter of aperture</description>
+                <unit>deg</unit>
+                <ucd>instr.fov</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>SNR</name>
+                <description>Signal-to-noise ratio estimated for this dataset</description>
+                <ucd>stat.snr</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>REDSHIFT</name>
+                <description>Redshift of target object</description>
+                <ucd>src.redshift</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>TARGETNAME</name>
+                <description>Common name of object observed.</description>
+                <ucd>meta.id;src</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>TARGETCLASS</name>
+                <description>Object class (star, QSO,...; use Simbad object classification http://simbad.u-strasbg.fr/simbad/sim-display?data=otypes if at all possible)</description>
+                <ucd>src.class</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>MTIME</name>
+                <description>Date last published.</description>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>FLUXCALIB</name>
+                <description>Type of flux calibration (ABSOLUTE, CALIBRATED, RELATIVE, NORMALIZED, or UNCALIBRATED).</description>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>SPATRES</name>
+                <description>Spatial resolution of data</description>
+                <unit>deg</unit>
+                <ucd>pos.angResolution</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>WAVECALIB</name>
+                <description>Type of wavelength calibration</description>
+                <ucd>meta.code.qual</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>COLLECTION</name>
+                <description>A short handle naming the collection this spectrum belongs to.</description>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>SPECRP</name>
+                <description>Lower limit to spectral resolution power (&#x3BB;/&#x394;&#x3BB;) as a single number.</description>
+                <dataType>real</dataType>
+              </param>
+              <param std="true">
+                <name>PUBDID</name>
+                <description>Dataset identifier assigned by the publisher</description>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>CREATORDID</name>
+                <description>Dataset identifier assigned by the creator</description>
+                <ucd>meta.id</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="false">
+                <name>WILDTARGET</name>
+                <description>Shell pattern of target observed (case insensitive)</description>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="false">
+                <name>WILDTARGETCASE</name>
+                <description>Shell pattern of target observed (case sensitive)</description>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>REQUEST</name>
+                <description>This is queryData for the default operation; some services support getData as well</description>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>TOP</name>
+                <description>Only return the TOP "best" records (on this service, this usually is equivalent to MAXREC, so no ranking is implied).</description>
+                <dataType>integer</dataType>
+              </param>
+              <param std="true">
+                <name>COMPRESS</name>
+                <description>Return compressed results?</description>
+                <dataType>char</dataType>
+              </param>
+              <param std="true">
+                <name>RUNID</name>
+                <description>An identifier for a certain run. Opaque to the service</description>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="false">
+                <name>TIME</name>
+                <description>Time covered by the time series</description>
+                <unit>d</unit>
+                <ucd>time.epoch</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="false">
+                <name>field</name>
+                <description>Survey field observed.</description>
+                <ucd>meta.id;obs.field</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>RESPONSEFORMAT</name>
+                <description>File format requested for output.</description>
+                <ucd>meta.code.mime</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>MAXREC</name>
+                <description>Maximum number of records returned. Pass 0 to retrieve service parameters.</description>
+                <dataType>integer</dataType>
+              </param>
+              <param std="true">
+                <name>VERB</name>
+                <description>Exhaustiveness of column selection. VERB=1 only returns the most important columns, VERB=2 selects the columns deemed useful to the average user, VERB=3 returns a table with all available columns.</description>
+                <dataType>integer</dataType>
+              </param>
+            </interface>
+            <complianceLevel>query</complianceLevel>
+            <productType>timeseries</productType>
+            <dataSource>survey</dataSource>
+            <creationType>archival</creationType>
+            <supportedFrame>ICRS</supportedFrame>
+            <maxSearchRadius>90</maxSearchRadius>
+            <maxRecords>1000000</maxRecords>
+            <defaultMaxRecords>10000</defaultMaxRecords>
+            <maxAperture>90</maxAperture>
+            <testQuery>
+              <queryDataCmd>MAXREC=1&amp;REQUEST=queryData</queryDataCmd>
+            </testQuery>
+          </capability>
+          <capability>
+            <interface xsi:type="vr:WebBrowser">
+              <accessURL use="full">http://dc.zah.uni-heidelberg.de/bgds/l/tsform/form</accessURL>
+              <mirrorURL>https://dc.zah.uni-heidelberg.de/bgds/l/tsform/form</mirrorURL>
+            </interface>
+          </capability>
+          <capability standardID="ivo://ivoa.net/std/VOSI#availability">
+            <interface role="std" xsi:type="vs:ParamHTTP">
+              <accessURL use="full">http://dc.zah.uni-heidelberg.de/bgds/l/ssa/availability</accessURL>
+              <mirrorURL>https://dc.zah.uni-heidelberg.de/bgds/l/ssa/availability</mirrorURL>
+            </interface>
+          </capability>
+          <capability standardID="ivo://ivoa.net/std/VOSI#capabilities">
+            <interface role="std" xsi:type="vs:ParamHTTP">
+              <accessURL use="full">http://dc.zah.uni-heidelberg.de/bgds/l/ssa/capabilities</accessURL>
+              <mirrorURL>https://dc.zah.uni-heidelberg.de/bgds/l/ssa/capabilities</mirrorURL>
+            </interface>
+          </capability>
+          <capability standardID="ivo://ivoa.net/std/VOSI#tables">
+            <interface role="std" xsi:type="vs:ParamHTTP">
+              <accessURL use="full">http://dc.zah.uni-heidelberg.de/bgds/l/ssa/tableMetadata</accessURL>
+              <mirrorURL>https://dc.zah.uni-heidelberg.de/bgds/l/ssa/tableMetadata</mirrorURL>
+            </interface>
+          </capability>
+          <capability standardID="ivo://ivoa.net/std/TAP#aux">
+            <interface role="std" version="1.1" xsi:type="vs:ParamHTTP">
+              <accessURL use="base">http://dc.zah.uni-heidelberg.de/tap</accessURL>
+              <mirrorURL>https://dc.zah.uni-heidelberg.de/tap</mirrorURL>
+            </interface>
+          </capability>
+          <capability standardID="ivo://ivoa.net/std/SODA#sync-1.0">
+            <interface role="std" xsi:type="vs:ParamHTTP">
+              <accessURL use="base">http://dc.zah.uni-heidelberg.de/bgds/l/tsdl/dlget</accessURL>
+              <mirrorURL>https://dc.zah.uni-heidelberg.de/bgds/l/tsdl/dlget</mirrorURL>
+            </interface>
+          </capability>
+          <capability standardID="ivo://ivoa.net/std/DataLink#links-1.0">
+            <interface role="std" xsi:type="vs:ParamHTTP">
+              <accessURL use="base">http://dc.zah.uni-heidelberg.de/bgds/l/tsdl/dlmeta</accessURL>
+              <mirrorURL>https://dc.zah.uni-heidelberg.de/bgds/l/tsdl/dlmeta</mirrorURL>
+              <queryType>GET</queryType>
+              <resultType>application/x-votable+xml;content=datalink</resultType>
+              <param std="true">
+                <name>ID</name>
+                <description>The pubisher DID of the dataset of interest</description>
+                <ucd>meta.id;meta.main</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>RESPONSEFORMAT</name>
+                <description>File format requested for output.</description>
+                <ucd>meta.code.mime</ucd>
+                <dataType arraysize="*">char</dataType>
+              </param>
+              <param std="true">
+                <name>MAXREC</name>
+                <description>Maximum number of records returned. Pass 0 to retrieve service parameters.</description>
+                <dataType>integer</dataType>
+              </param>
+              <param std="true">
+                <name>VERB</name>
+                <description>Exhaustiveness of column selection. VERB=1 only returns the most important columns, VERB=2 selects the columns deemed useful to the average user, VERB=3 returns a table with all available columns.</description>
+                <dataType>integer</dataType>
+              </param>
+            </interface>
+          </capability>
+          <facility altIdentifier="doi:10.fake/fake">Universit&#xE4;tssternwarte Bochum near Cerro Armazones</facility>
+          <instrument altIdentifier="doi:10.fake/robofake">Robotic Bochum Twin Telescope (RoBoTT)</instrument>
+          <coverage>
+            <spatial>3/336,338,450-451,461,472,591-592,613,615,621,651-652,659,662-663
+4/1301,1303,1358,1376-1377,1379-1380,1382,1794,1816,1818-1819,1822-1823,1829,1840-1841,1892,1894,1897,2327,2333,2335,2357-2359,2376,2378,2400,2402,2408,2492-2493,2495,2528,2530,2536,2538,2591,2599,2601-2603,2612-2614,2616,2634-2635,2643,2646-2647,2656-2657,2688-2690</spatial>
+            <temporal>55450 58106.4</temporal>
+            <spectral>1.777e-19 6.621e-19</spectral>
+            <footprint ivo-id="ivo://ivoa.net/std/moc">http://dc.zah.uni-heidelberg.de/bgds/l/ssa/coverage</footprint>
+            <waveband>Optical</waveband>
+          </coverage>
+          <tableset>
+            <schema>
+              <name>bgds</name>
+              <title>BGDS time series</title>
+              <description>
+From the Bochum Galactic Disk Survey, time series have been obtained in the
+r and i bands on an (up to) nightly basis. Depending on the field, the time
+series contain up to more than 300 nights over more than 7 years. Each
+measurement represents the averaged flux over 10 minutes of observation
+(from 9 averaged 10s images).
+
+The Bochum Galactic Disk Survey is an ongoing project to monitor the
+stellar content of the Galactic disk in a 6 degree wide stripe centered on
+the Galactic plane. The data has been recorded since mid-2010 in Sloan r
+and i simultaneously with the Robotic Bochum Twin Telescope (RoBoTT) at the
+Universitaetssternwarte Bochum near Cerro Armazones in the Chilean Atacama
+desert. It contains measurements of about 2x10^7 stars over more than seven
+years. Additionally, intermittent measurements in Johnson UVB and Sloan z
+have been recorded as well.</description>
+              <table>
+                <name>bgds.ssa_time_series</name>
+                <description> This table contains about metadata about the photometric time series
+from BGDS in IVOA SSA format. The actual data is available through a
+datalink service or in the phot_i and phot_r tables.</description>
+                <column>
+                  <name>accref</name>
+                  <description>Access key for the data</description>
+                  <ucd>meta.ref.url;meta.dataset</ucd>
+                  <utype>ssa:Access.Reference</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>indexed</flag>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>owner</name>
+                  <description>Owner of the data</description>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>embargo</name>
+                  <description>Date the data will become/became public</description>
+                  <unit>a</unit>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>mime</name>
+                  <description>MIME type of the file served</description>
+                  <ucd>meta.code.mime</ucd>
+                  <utype>ssa:Access.Format</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>accsize</name>
+                  <description>Size of the data in bytes</description>
+                  <unit>byte</unit>
+                  <utype>ssa:Access.Size</utype>
+                  <dataType xsi:type="vs:VOTableType">long</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_dstitle</name>
+                  <description>A compact and descriptive designation of the dataset.</description>
+                  <ucd>meta.title;meta.dataset</ucd>
+                  <utype>ssa:DataID.Title</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                </column>
+                <column>
+                  <name>ssa_creatordid</name>
+                  <description>Dataset identifier assigned by the creator</description>
+                  <ucd>meta.id</ucd>
+                  <utype>ssa:DataID.CreatorDID</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_pubdid</name>
+                  <description>Dataset identifier assigned by the publisher</description>
+                  <utype>ssa:Curation.PublisherDID</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>indexed</flag>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_cdate</name>
+                  <description>Processing/Creation date</description>
+                  <ucd>time;meta.dataset</ucd>
+                  <utype>ssa:DataID.Date</utype>
+                  <dataType arraysize="19" extendedType="timestamp" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_pdate</name>
+                  <description>Date last published.</description>
+                  <utype>ssa:Curation.Date</utype>
+                  <dataType arraysize="19" extendedType="timestamp" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_bandpass</name>
+                  <description>Bandpass (i.e., rough spectral location) of this dataset; this should be the most appropriate term from the values of VODataService vs:Waveband.</description>
+                  <ucd>instr.bandpass</ucd>
+                  <utype>ssa:DataID.Bandpass</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_cversion</name>
+                  <description>Creator assigned version for this dataset (will be incremented when this particular item is changed).</description>
+                  <ucd>meta.version;meta.dataset</ucd>
+                  <utype>ssa:DataID.Version</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_targname</name>
+                  <description>Common name of object observed.</description>
+                  <ucd>meta.id;src</ucd>
+                  <utype>ssa:Target.Name</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>indexed</flag>
+                </column>
+                <column>
+                  <name>ssa_targclass</name>
+                  <description>Object class (star, QSO,...; use Simbad object classification http://simbad.u-strasbg.fr/simbad/sim-display?data=otypes if at all possible)</description>
+                  <ucd>src.class</ucd>
+                  <utype>ssa:Target.Class</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_redshift</name>
+                  <description>Redshift of target object</description>
+                  <ucd>src.redshift</ucd>
+                  <utype>ssa:Target.Redshift</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_targetpos</name>
+                  <description>Equatorial (ICRS) position of the target object.</description>
+                  <ucd>pos.eq;src</ucd>
+                  <utype>ssa:Target.pos.spoint</utype>
+                  <dataType arraysize="2" extendedType="point" xsi:type="vs:VOTableType">double</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_snr</name>
+                  <description>Signal-to-noise ratio estimated for this dataset</description>
+                  <ucd>stat.snr</ucd>
+                  <utype>ssa:Derived.SNR</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_location</name>
+                  <description>ICRS location of aperture center</description>
+                  <unit>deg</unit>
+                  <ucd>pos.eq</ucd>
+                  <utype>ssa:Char.SpatialAxis.Coverage.Location.Value</utype>
+                  <dataType arraysize="2" extendedType="point" xsi:type="vs:VOTableType">double</dataType>
+                  <flag>indexed</flag>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_aperture</name>
+                  <description>Angular diameter of aperture</description>
+                  <unit>deg</unit>
+                  <ucd>instr.fov</ucd>
+                  <utype>ssa:Char.SpatialAxis.Coverage.Bounds.Extent</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_dateobs</name>
+                  <description>Midpoint of exposure</description>
+                  <unit>d</unit>
+                  <ucd>time.epoch</ucd>
+                  <utype>ssa:Char.TimeAxis.Coverage.Location.Value</utype>
+                  <dataType xsi:type="vs:VOTableType">double</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_timeext</name>
+                  <description>Exposure duration</description>
+                  <unit>s</unit>
+                  <ucd>time.duration</ucd>
+                  <utype>ssa:Char.TimeAxis.Coverage.Bounds.Extent</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_specmid</name>
+                  <description>Midpoint of region covered in this dataset</description>
+                  <unit>m</unit>
+                  <ucd>em.wl;instr.bandpass</ucd>
+                  <utype>ssa:Char.SpectralAxis.Coverage.Location.Value</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_specext</name>
+                  <description>Width of the spectrum</description>
+                  <unit>m</unit>
+                  <ucd>em.wl;instr.bandwidth</ucd>
+                  <utype>ssa:Char.SpectralAxis.Coverage.Bounds.Extent</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_specstart</name>
+                  <description>Lower value of spectral coordinate</description>
+                  <unit>m</unit>
+                  <ucd>em.wl;stat.min</ucd>
+                  <utype>ssa:Char.SpectralAxis.Coverage.Bounds.Start</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_specend</name>
+                  <description>Upper value of spectral coordinate</description>
+                  <unit>m</unit>
+                  <ucd>em.wl;stat.max</ucd>
+                  <utype>ssa:Char.SpectralAxis.Coverage.Bounds.Stop</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_length</name>
+                  <description>Number of points in the spectrum</description>
+                  <utype>ssa:Dataset.Length</utype>
+                  <dataType xsi:type="vs:VOTableType">int</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_dstype</name>
+                  <description>Type of data (spectrum, time series, etc)</description>
+                  <utype>ssa:Dataset.Type</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_publisher</name>
+                  <description>Publisher of the datasets included here.</description>
+                  <utype>ssa:Curation.Publisher</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_creator</name>
+                  <description>Creator of the datasets included here.</description>
+                  <utype>ssa:DataID.Creator</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">unicodeChar</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_collection</name>
+                  <description>A short handle naming the collection this spectrum belongs to.</description>
+                  <utype>ssa:DataID.Collection</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_instrument</name>
+                  <description>Instrument or code used to produce these datasets</description>
+                  <ucd>meta.id;instr</ucd>
+                  <utype>ssa:DataID.Instrument</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_datasource</name>
+                  <description>Method of generation for the data (one of survey, pointed, theory, custom, artificial).</description>
+                  <utype>ssa:DataID.DataSource</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_creationtype</name>
+                  <description>Process used to produce the data (archival, cutout, filtered, mosaic, projection, spectralExtraction, or catalogExtraction)</description>
+                  <utype>ssa:DataID.CreationType</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_reference</name>
+                  <description>URL or bibcode of a publication describing this data.</description>
+                  <utype>ssa:Curation.Reference</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_fluxstaterror</name>
+                  <description>Statistical error in flux</description>
+                  <unit>s**-1</unit>
+                  <ucd>stat.error;phot.flux.density;em</ucd>
+                  <utype>ssa:Char.FluxAxis.Accuracy.StatError</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_fluxsyserror</name>
+                  <description>Systematic error in flux</description>
+                  <unit>s**-1</unit>
+                  <ucd>stat.error.sys;phot.flux.density;em</ucd>
+                  <utype>ssa:Char.FluxAxis.Accuracy.SysError</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_fluxcalib</name>
+                  <description>Type of flux calibration (ABSOLUTE, CALIBRATED, RELATIVE, NORMALIZED, or UNCALIBRATED).</description>
+                  <utype>ssa:Char.FluxAxis.Calibration</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_binsize</name>
+                  <description>Bin size in wavelength</description>
+                  <unit>m</unit>
+                  <ucd>em.wl;spect.binSize</ucd>
+                  <utype>ssa:Char.SpectralAxis.Accuracy.BinSize</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_spectstaterror</name>
+                  <description>Statistical error in wavelength</description>
+                  <unit>m</unit>
+                  <ucd>stat.error;em</ucd>
+                  <utype>ssa:Char.SpectralAxis.Accuracy.StatError</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_spectsyserror</name>
+                  <description>Systematic error in wavelength</description>
+                  <unit>m</unit>
+                  <ucd>stat.error.sys;em</ucd>
+                  <utype>ssa:Char.SpectralAxis.Accuracy.SysError</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_speccalib</name>
+                  <description>Type of wavelength calibration</description>
+                  <ucd>meta.code.qual</ucd>
+                  <utype>ssa:Char.SpectralAxis.Calibration</utype>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ssa_specres</name>
+                  <description>Resolution on the spectral axis</description>
+                  <unit>m</unit>
+                  <ucd>spect.resolution;em.wl</ucd>
+                  <utype>ssa:Char.SpectralAxis.Resolution</utype>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>obs_id</name>
+                  <description>Main identifier of this observation (a single object may have multiple observations in different bands and fields)</description>
+                  <ucd>meta.id;meta.main</ucd>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>time_min</name>
+                  <description>First timestamp in time series (MJD Topocentric UTC)</description>
+                  <unit>d</unit>
+                  <ucd>time.epoch;stat.min</ucd>
+                  <dataType xsi:type="vs:VOTableType">double</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>time_max</name>
+                  <description>Last timestamp in time series (MJD Topocentric UTC)</description>
+                  <unit>d</unit>
+                  <ucd>time.epoch;stat.max</ucd>
+                  <dataType xsi:type="vs:VOTableType">double</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>amp</name>
+                  <description>Difference between brightest and weakest observation.</description>
+                  <unit>mag</unit>
+                  <ucd>arith.diff;phot.mag</ucd>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>mean_mag</name>
+                  <description>Mean magnitude in band given in phot_band.</description>
+                  <unit>mag</unit>
+                  <ucd>phot.mag;stat.mean</ucd>
+                  <dataType xsi:type="vs:VOTableType">float</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>field</name>
+                  <description>Survey field observed.</description>
+                  <ucd>meta.id;obs.field</ucd>
+                  <dataType arraysize="*" xsi:type="vs:VOTableType">char</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>ra</name>
+                  <description>ICRS right ascension for this object.</description>
+                  <ucd>pos.eq.ra;meta.main</ucd>
+                  <dataType xsi:type="vs:VOTableType">double</dataType>
+                  <flag>nullable</flag>
+                </column>
+                <column>
+                  <name>dec</name>
+                  <description>ICRS declination for this object.</description>
+                  <ucd>pos.eq.dec;meta.main</ucd>
+                  <dataType xsi:type="vs:VOTableType">double</dataType>
+                  <flag>nullable</flag>
+                </column>
+              </table>
+            </schema>
+            <schema>
+              <name>ivoa</name>
+              <description>Definition and support code for the ObsCore data model and table.</description>
+              <table>
+                <name>ivoa.obscore</name>
+                <description>This data collection is queriable in GAVO Data Center's obscore table.</description>
+              </table>
+            </schema>
+          </tableset>
+        </ri:Resource>
+      </oai:metadata>
+    </oai:record>
+  </oai:GetRecord>
+</oai:OAI-PMH>

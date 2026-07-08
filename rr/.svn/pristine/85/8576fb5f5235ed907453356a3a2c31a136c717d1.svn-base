@@ -1,0 +1,3 @@
+createDDL_ddlGeneration.jdbc is from Paul Harrison's relational registry
+project.  It is used to generate the rd from q.rd.in using the bin/makeRD.py
+script

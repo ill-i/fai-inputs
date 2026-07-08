@@ -1,0 +1,779 @@
+"""
+tests for various results of vorgrammar parsing certain resource records.
+"""
+
+import datetime
+import itertools
+import os
+import pprint
+os.environ["GAVO_OOTTEST"] = "dontcare"
+
+from gavo import api
+from gavo import rsc
+from gavo.helpers import testhelpers
+from gavo.protocols import oaiclient
+from gavo.utils import pgsphere
+
+RD = api.getRD("rr/q")
+
+from gavo import base
+base.DEBUG = True
+
+
+def dispatchIntoTables(iterator):
+	"""turns a sequence of stuff coming out of a dispatched grammar into a
+	dictionary of lists of rows.
+	"""
+	tables = {}
+	for item in iterator:
+		if item is rsc.FLUSH:
+			continue
+		else:
+			tableName, row = item
+			del row["parser_"]
+		tables.setdefault(tableName, []).append(row)
+	return tables
+
+
+class RecordsTR(testhelpers.TestResource):
+	"""a base class for test resources keeping parsed OAI xml.
+
+	There's a class attribute srcPath (relative to tests/samples),
+	and the result is a dictionary with table names as keys and lists
+	of rows as values.
+	"""
+	def __init__(self, srcPath):
+		self.srcPath = srcPath
+		testhelpers.TestResource.__init__(self)
+
+	def make(self, deps):
+		return dispatchIntoTables(
+			RD.getById("vorgrammar").parse(RD.getAbsPath(
+				os.path.join("tests", "samples", self.srcPath))))
+
+
+_dataCollectionRecords = RecordsTR("org.gavo.dc/datacollection.xml")
+_siapServiceRecords = RecordsTR("archive.stsci.edu/siapservice.xml")
+_ssapServiceRecords = RecordsTR("org.gavo.dc/ssap.xml")
+_coneServiceRecords = RecordsTR("org.gavo.dc/cone.xml")
+_tapServiceRecords = RecordsTR("org.gavo.dc/tapsvc.xml")
+_deletedRecords = RecordsTR("org.gavo.dc/deleted.xml")
+_orgRecords = RecordsTR("archive.stsci.edu/org.xml")
+_standardsRecords = RecordsTR("ivoa.net/brokenrec.xml")
+_documentRecords = RecordsTR("org.gavo.dc/doc.xml")
+_standardRecords = RecordsTR("ivoa.net/std.xml")
+
+
+class _DetailsTest(object):
+	def assertRecsHaveXPath(self, xpath, value, capIndex):
+		if not hasattr(self.recs, "_xpathmatches"):
+			self.recs._xpathmatches = set([
+				(r["detail_xpath"], r["detail_value"], r["cap_index"])
+					for r in self.recs["res_detail"]])
+		self.assertTrue((xpath, value, capIndex) in self.recs._xpathmatches,
+			"%s -> %s was not found in %s"%(
+				xpath, value, self.recs._xpathmatches))
+
+
+class _DataCollectionRoles(testhelpers.TestResource):
+	resources = [("recs", _dataCollectionRecords)]
+
+	def make(self, deps):
+		roles = {}
+		for rec in deps["recs"]["res_role"]:
+			roles.setdefault(rec["base_role"], []).append(rec)
+		return roles
+
+
+class DataCollectionTest(testhelpers.VerboseTest, _DetailsTest):
+	resources = [("recs", _dataCollectionRecords)]
+
+	def testDataURLPresent(self):
+		self.assertRecsHaveXPath("/accessURL",
+			'http://foo.bar/laber', None)
+
+	def testFormatPresent(self):
+		self.assertRecsHaveXPath("/format", 'Database', None)
+		self.assertRecsHaveXPath("/format/@isMIMEType", 'false', None)
+
+	def testAuthorsCombined(self):
+		self.assertEqual(self.recs["resource"][0]["creator_seq"],
+			u'A. C. Robin; C. Reyl\xe9')
+
+	def testContributorPresent(self):
+		self.assertTrue({'role_ivoid': u'ivo://stern.ru/agdur',
+				'ivoid': u'ivo://org.gavo.dc/gums/q/pub',
+				'role_name': u'Agdur Inal-Ipa', 'base_role': 'contributor',
+				'alt_identifier': None} in
+			self.recs["res_role"],
+			"Missing contributor: %s"%self.recs["res_role"])
+
+	def testDateParsed(self):
+		self.assertEqual(self.recs["res_date"][0], {
+			'date_value': datetime.datetime(2012, 4, 20, 15, 34, 45),
+			'ivoid': u'ivo://org.gavo.dc/gums/q/pub',
+			'value_role': 'updated'})
+		self.assertEqual(self.recs["res_date"][1], {
+			'date_value': datetime.datetime(2017, 12, 24, 20, 10, 23),
+			'ivoid': u'ivo://org.gavo.dc/gums/q/pub',
+			'value_role': u'last-checked'})
+
+
+class RoleParsingTest(testhelpers.VerboseTest):
+	resources = [
+		("roles", _DataCollectionRoles()),
+		("siapRecs", _siapServiceRecords),
+		("ssapRecs", _ssapServiceRecords)]
+	
+	def testPublisher(self):
+		self.assertEqual(self.roles["publisher"], [{
+				'role_ivoid': 'ivo://org.gavo.dc',
+				'base_role': 'publisher',
+				'ivoid': 'ivo://org.gavo.dc/gums/q/pub',
+				'role_name': 'The GAVO DC team',
+				'alt_identifier': None}])
+
+	def testCreator(self):
+		self.assertEqual(self.roles["creator"], [{
+				'ivoid': u'ivo://org.gavo.dc/gums/q/pub',
+				'role_name': 'A. C. Robin', 'role_ivoid': None,
+				'base_role': 'creator',
+				'logo': 'http://some.url/robin'
+			}, {
+				'ivoid': 'ivo://org.gavo.dc/gums/q/pub',
+				'role_name': u'C. Reyl\xe9', 'role_ivoid': None,
+				'base_role': 'creator',
+			}])
+
+	def testContact(self):
+		self.assertEqual(self.roles["contact"], [{
+			'telephone': u'++49 6221 54 1837',
+			'role_ivoid': None,
+			'ivoid': u'ivo://org.gavo.dc/gums/q/pub',
+			'role_name': u'GAVO Data Center Team',
+			'street_address': u'M\xf6nchhofstrasse 12-14, D-69120 Heidelberg',
+			'base_role': 'contact',
+			'email': 'gavo@ari.uni-heidelberg.de'}])
+
+	def testEmptyContactIsNotNULL(self):
+		creatorRec = [r for r in self.siapRecs["res_role"]
+			if r["base_role"]=="creator"][0]
+		self.assertEqual(creatorRec["role_name"], None)
+
+	def testRoleAltIdentifiers(self):
+		altIdentifiers = set(r["alt_identifier"]
+			for r in self.ssapRecs["res_role"]
+			if "alt_identifier" in r)
+		self.assertEqual(altIdentifiers, {
+			"https://orcid.org/fake-fake",  # publisher
+			"https://orcid.org/msdemlei-fake", # contibutor
+			"http://orcid.org/moritz-fake", # creator/name
+		})
+
+
+class InterfaceTest(testhelpers.VerboseTest, _DetailsTest):
+	resources = [("recs", _siapServiceRecords)]
+
+	def testInterfacesPresent(self):
+		self.assertEqual(len(self.recs["interface"]), 2)
+
+	def testSIAPInterface(self):
+		self.maxDiff = None
+		self.assertEqual(self.recs["interface"][0], {
+			'authenticated_only': True,
+			'cap_index': 1,
+			'std_version': u"1.0",
+			'intf_type': 'vs:paramhttp',
+			'query_type': u'get',
+			'intf_role': u'std',
+			'intf_index': 1,
+			'ivoid': u'ivo://mast.stsci/siap/xmm-om',
+			'url_use': u'base',
+			'security_method_id': None,
+			'access_url': u'http://archive.stsci.edu/siap/search.php?id=XMM-OM&',
+			'mirror_url': u'http://archive.eso.org/siap/search.php?id=XMM-OM&'
+				'#http://mirrors.cadc.ca/siap/%23XMM-OM?',
+			})
+
+	def testVOSIInterface(self):
+		self.assertEqual(self.recs["interface"][1], {
+			'authenticated_only': False,
+			'cap_index': 2,
+			'std_version': None,
+			'intf_type': u'vs:paramhttp',
+			'intf_role': None,
+			'intf_index': 2,
+			'ivoid': u'ivo://mast.stsci/siap/xmm-om',
+			'url_use': u'full',
+			'security_method_id': None,
+			'access_url': u'http://archive.stsci.edu/siap/tableMetadata',
+			'mirror_url': u'http://uptime.stsci.edu?svc=xmmsvcs'
+				'#http://uptime.bigbrother.gov/stsci/xmmsvcs'})
+
+	def testSecurityMethods(self):
+		secMeths = [r["detail_value"]
+			for r in self.recs["res_detail"]
+			if r["detail_xpath"]=="/capability/interface/securityMethod/@standardID"
+				and r["cap_index"]==2]
+		self.assertEqual(
+			secMeths,
+			[u'http://schneier.com/ConFound', u'ivo://gavo/pound'])
+
+	def testSIAPMetaKeysPresent(self):
+		keys = set([r["detail_xpath"] for r in self.recs["res_detail"]])
+		self.assertEqual(keys, set([
+				'/capability/maxRecords',
+				'/capability/maxImageSize',
+				'/capability/maxImageExtent/lat',
+				'/capability/maxImageExtent/long',
+				'/capability/maxQueryRegionSize/lat',
+				'/capability/maxQueryRegionSize/long',
+				'/capability/maxFileSize',
+				'/capability/imageServiceType',
+				'/capability/testQuery/size/lat',
+				'/capability/testQuery/size/long',
+				'/capability/testQuery/pos/lat',
+				'/capability/testQuery/pos/long',
+				'/capability/testQuery/extras',
+				'/instrument',
+				"/coverage/footprint",
+				"/coverage/footprint/@ivo-id",
+				"/rights",
+				"/rights/@rightsURI",
+				"/capability/interface/securityMethod/@standardID",
+				]))
+
+	def testSIAPSimpleValue(self):
+		self.assertRecsHaveXPath("/capability/maxFileSize",
+			"35712000", 1)
+
+	def testSIAPComplexValue(self):
+		self.assertRecsHaveXPath("/capability/testQuery/size/long",
+			"5.0", 1)
+
+	def testFootprint(self):
+		self.assertRecsHaveXPath("/coverage/footprint",
+			"http://foot.edu/print", None)
+		self.assertRecsHaveXPath("/coverage/footprint/@ivo-id",
+			"ivo://foot/print", None)
+
+
+class CapabilityTest(testhelpers.VerboseTest):
+	resources = [("recs", _siapServiceRecords)]
+
+	def testCapabilitiesPresent(self):
+		self.assertEqual(len(self.recs["capability"]), 2)
+
+	def testSIAPCapability(self):
+		self.assertEqual(self.recs["capability"][0], {
+				'cap_index': 1,
+				'standard_id': u'ivo://ivoa.net/std/sia',
+				'ivoid': u'ivo://mast.stsci/siap/xmm-om',
+				'cap_type': u'sia:simpleimageaccess'})
+
+
+class ResourceTest(testhelpers.VerboseTest, _DetailsTest):
+	resources = [("recs", _siapServiceRecords)]
+
+	def testResourcePresent(self):
+		self.assertEqual(len(self.recs["resource"]), 1)
+
+	def testHashAdded(self):
+		self.assertEqual(self.recs["resource"][0]["content_level"],
+			"research#elementary education")
+
+	def testKeysPresent(self):
+		self.assertSetEqual(set(self.recs["resource"][0].keys()),
+			set(["ivoid", "res_type", "created", "short_name",
+				"res_title", "updated", "content_level", "res_description",
+				"reference_url", "content_type", "source_format",
+				"source_value", "res_version",
+				"region_of_regard", "waveband",
+				"harvested_from", "rights", "rights_uri"]))
+
+	def testRegionOfRegard(self):
+		self.assertEqual(self.recs["resource"][0]["region_of_regard"],
+			"0.00001")
+
+	def testInstrumentDetail(self):
+		self.assertRecsHaveXPath('/instrument', 'XMM', None)
+
+	def testFirstRights(self):
+		self.assertEqual(self.recs["resource"][0]["rights"],
+			"This resource is in the public domain")
+		self.assertEqual(self.recs["resource"][0]["rights_uri"],
+			"http://creativecommons.org/publicdomain/zero/1.0/")
+
+	def testRightsDetails(self):
+		self.assertRecsHaveXPath('/rights', 'public', None)
+		self.assertRecsHaveXPath('/rights',
+			'This resource is in the public domain', None)
+
+	def testRightsURIDetails(self):
+		self.assertRecsHaveXPath('/rights/@rightsURI',
+			'http://creativecommons.org/publicdomain/zero/1.0/', None)
+
+
+class SubjectTest(testhelpers.VerboseTest):
+	resources = [("recs", _siapServiceRecords)]
+
+	def testSubjectsPresent(self):
+		self.assertEqual(len(self.recs["res_subject"]), 4)
+
+	def testSubjectNames(self):
+		self.assertEqual(set(r["res_subject"] for r in self.recs["res_subject"]),
+			set(['Ultraviolet Astronomy', 'Optical  Astronomy', "Not in UAT",
+				'Akaike information criterion']))
+
+	def testTranslatedSubjects(self):
+		# this is a temporary feature
+		# including a temporary feature while VizieR has labels instead
+		# of identifiers (the information criterion thing)
+		self.assertEqual(set(r["uat_concept"] for r in self.recs["subject_uat"]),
+			set(['ultraviolet-astronomy', 'visible-astronomy',
+				'akaike-information-criterion']))
+
+
+class OrgTest(testhelpers.VerboseTest, _DetailsTest):
+	resources = [("recs", _orgRecords)]
+
+	def testFacility(self):
+		self.assertRecsHaveXPath("/facility", 'Keck Telescopes', None)
+	
+	def testInstrument(self):
+		self.assertRecsHaveXPath("/instrument", 'Keck Telescope', None)
+
+	def testInstrumentIvoId(self):
+		self.assertRecsHaveXPath("/instrument/@ivo-id",
+			'ivo://keckobs/ourtel', None)
+
+
+class TAPServiceTest(testhelpers.VerboseTest, _DetailsTest):
+	resources = [("recs", _tapServiceRecords)]
+
+	def testLanguageRec(self):
+		self.assertRecsHaveXPath("/capability/language/name", "ADQL", 1)
+		self.assertRecsHaveXPath("/capability/language/version/@ivo-id",
+			"ivo://ivoa.net/std/ADQL#v2.0", 1)
+
+	def testDataModelGenerated(self):
+		self.assertRecsHaveXPath(
+			"/capability/dataModel", "ObsCore 1.0", 1)
+
+	def testDataModelIVOIDGenerated(self):
+		self.assertRecsHaveXPath("/capability/dataModel/@ivo-id",
+			"ivo://ivoa.net/std/ObsCore-1.0", 1)
+
+	def testOutputFormat(self):
+		self.assertRecsHaveXPath('/capability/outputFormat/@ivo-id',
+			u'ivo://ivoa.net/std/TAPRegExt#output-votable-binary', 1)
+		self.assertRecsHaveXPath('/capability/outputFormat/alias', u'fits', 1)
+		self.assertRecsHaveXPath('/capability/outputFormat/mime',
+			u'text/csv;header=present', 1)
+
+	def testCapabilityClean(self):
+		self.assertEqual(self.recs["capability"][0], {
+			'cap_index': 1,
+			'standard_id': u'ivo://ivoa.net/std/tap',
+			'ivoid': u'ivo://org.gavo.dc/__system__/tap/run',
+			'cap_type': u'tr:tableaccess'})
+
+	def testLimits(self):
+		self.assertRecsHaveXPath('/capability/uploadLimit/hard',
+			'20000000', 1)
+		self.assertRecsHaveXPath('/capability/uploadLimit/hard/@unit',
+			'byte', 1)
+		self.assertRecsHaveXPath('/capability/outputLimit/default',
+			'2000', 1)
+		self.assertRecsHaveXPath('/capability/outputLimit/default/@unit',
+			'row', 1)
+
+	def testRelationship(self):
+		self.assertEqual(len([r for r in self.recs["relationship"]
+				if r['relationship_type']=='isservicefor']),
+			5)
+
+	def testLanguageForms(self):
+		self.assertRecsHaveXPath(
+			'/capability/language/languageFeatures/feature/form',
+			'gavo_hasword(word TEXT, string TEST) -> INTEGER', 1)
+		self.assertRecsHaveXPath(
+			'/capability/language/languageFeatures/feature/form',
+			'INTERSECTS', 1)
+
+
+class SSAPServiceTest(testhelpers.VerboseTest, _DetailsTest):
+	resources = [("recs", _ssapServiceRecords)]
+	
+	def testProductType(self):
+		self.assertRecsHaveXPath('/capability/productType',
+			'timeseries', 1)
+
+	def testDetailKeys(self):
+		self.assertEqual(
+			set(r["detail_xpath"] for r in self.recs["res_detail"]),
+			set(['/capability/maxSearchRadius', '/coverage/footprint',
+				'/capability/maxRecords', '/capability/creationType',
+				'/instrument', '/capability/testQuery/queryDataCmd',
+				'/capability/defaultMaxRecords', '/capability/dataSource',
+				'/rights', '/capability/maxAperture', '/capability/supportedFrame',
+				'/facility', '/capability/complianceLevel',
+				'/capability/productType', '/coverage/footprint/@ivo-id',
+				'/instrument/@altIdentifier', '/facility/@altIdentifier']))
+
+	def testFacilityAltId(self):
+		for rec in self.recs["res_detail"]:
+			if rec["detail_xpath"]=='/instrument/@altIdentifier':
+				self.assertEqual(rec["detail_value"], "doi:10.fake/robofake")
+				return
+		self.fail("No /instrument/@altIdentifier")
+
+	def testSourceParsed(self):
+		self.assertEqual(
+			self.recs["resource"][0]["source_value"], "2015AN....336..590H")
+		self.assertEqual(
+			self.recs["resource"][0]["source_format"], "bibcode")
+
+	def testRelationshipAltIdentifier(self):
+		self.assertEqual(
+			self.recs["relationship"][0]["related_alt_identifier"],
+			"doi:10.fake/tapservice")
+
+class TablesetTest(testhelpers.VerboseTest):
+	resources = [
+		("recs", _dataCollectionRecords),
+		("scsrecs", _coneServiceRecords),
+		]
+
+	def testTableMeta(self):
+		self.assertEqual(self.recs["res_table"][0], {
+			'table_index': 1, 'table_title': u'GUMS Quasars',
+			'table_type': "partial",
+			'ivoid': u'ivo://org.gavo.dc/gums/q/pub',
+			'table_name': u'gums.quasars',
+			'table_description': u'Quasars in the GUMS-10 simulated GAIA result set. This reflects the\nscheme laid down in gAIA-C2-TN-OCA-ES-001-1, i.e., SDSS quasar\nproperties extrapolated to G=20.5.',
+			'schema_index': 1,
+			'nrows': "302",
+			'table_utype': 'val:sim.orbit.foo',})
+
+	def testSIAPTableMeta(self):
+		self.assertEqual(self.recs["res_table"][0]['schema_index'], 1)
+		self.assertEqual(self.recs["table_column"][0]["unit"], 'km/s/H')
+
+
+class ColumnTest(testhelpers.VerboseTest):
+	resources = [("recs", _dataCollectionRecords)]
+
+	def testStdTrue(self):
+		row = [r for r in self.recs["table_column"] if r["name"]=="redshift"][0]
+		self.assertEqual(row["std"], 1)
+
+	def testStdFalse(self):
+		stdVals = set([r["std"] for r in self.recs["table_column"]
+			if r["name"]!="redshift"])
+		self.assertEqual(stdVals, set([None]))
+	
+	def testFlags(self):
+		row = [r for r in self.recs["table_column"] if r["name"]=="redshift"][0]
+		self.assertEqual(row["flag"], "indexed#nullable")
+
+	def testKeys(self):
+		row = [r for r in self.recs["table_column"] if r["name"]=="alpha"][0]
+		self.assertSetEqual(set(row.keys()),
+			set(['std', 'name', 'extended_schema', 'delim', 'ivoid',
+				'datatype', 'flag', 'ucd', 'arraysize', 'table_index',
+				'extended_type', 'type_system', 'column_description', 'unit']))
+
+	def testNoUnitFolding(self):
+		self.assertEqual(self.recs["table_column"][0]["unit"], "km/s/H")
+
+	def testExtendedType(self):
+		row = [r for r in self.recs["table_column"] if r["name"]=="junk"][0]
+		self.assertEqual(row["extended_type"], "junky")
+		self.assertEqual(row["extended_schema"], "extreme")
+
+
+class IntfParamTest(testhelpers.VerboseTest, _DetailsTest):
+	resources = [("recs", _coneServiceRecords)]
+
+	def testKeys(self):
+		row = [r for r in self.recs["intf_param"] if r["name"]=="ra"][0]
+		self.assertSetEqual(set(row.keys()),
+			set(['std', 'name', 'ivoid', 'param_use', 'intf_index',
+				'datatype', 'ucd', 'unit',
+				'type_system', 'param_description']))
+	
+	def testQueryString(self):
+		self.assertRecsHaveXPath('/capability/interface/testQueryString',
+			'RA=2.03&DEC=42.3&SR=3', 1)
+
+
+class ValidationTest(testhelpers.VerboseTest):
+	resources = [("recs", _siapServiceRecords)]
+
+	def testResRow(self):
+		row = [r for r in self.recs["validation"] if r["cap_index"] is None][0]
+		self.assertEqual(row, {
+			'cap_index': None, 'ivoid': u'ivo://mast.stsci/siap/xmm-om',
+			'val_level': 2, 'validated_by': u'ivo://archive.stsci.edu/nvoregistry'})
+
+	def testCapRow(self):
+		row = [r for r in self.recs["validation"] if r["cap_index"] is not None][0]
+		self.assertEqual(row, {
+			'cap_index': 1, 'ivoid': u'ivo://mast.stsci/siap/xmm-om',
+			'val_level': 2, 'validated_by': u'ivo://archive.stsci.edu/nvoregistry'})
+
+
+class DeletedTest(testhelpers.VerboseTest):
+	resources = [("recs", _deletedRecords)]
+
+	def testAllRecordsFound(self):
+		self.assertEqual(len(self.recs["resource"]), 3)
+
+	def testResourceAllNull(self):
+		resRecs = self.recs["resource"]
+		self.assertEqual(resRecs[0].pop("ivoid"),
+			"ivo://org.gavo.dc/tng-oig-siap")
+		self.assertEqual(set(resRecs[0].values()), set([None]))
+
+	def testNoSpuriousRows(self):
+		self.assertEqual(set(self.recs.keys()), set(["resource", "oairecs"]))
+		# only the "inactive" record should be in oairecs (even that's
+		# not really desirable; but inactive records stink anyway).
+		self.assertEqual(len(self.recs["oairecs"]), 1)
+
+
+class WhitespaceTest(testhelpers.VerboseTest):
+	resources = [("dcrecs", _dataCollectionRecords)]
+
+	def testEmptyNULL(self):
+		self.assertEqual(self.dcrecs["table_column"][-1]["unit"], None)
+	
+	def testAllWhitespaceNULL(self):
+		self.assertEqual(
+			self.dcrecs["table_column"][-1]["column_description"], None)
+
+	def testMissingNULL(self):
+		self.assertEqual(self.dcrecs["table_column"][-1]["arraysize"], None)
+
+	def testStripping(self):
+		self.assertEqual(self.dcrecs["table_column"][0]["unit"], "km/s/H")
+
+
+class LegacySTCTest(testhelpers.VerboseTest):
+	resources = [("recs", _dataCollectionRecords),
+		("siaprecs", _siapServiceRecords)]
+
+	def testTimeInterval(self):
+		self.assertEqual(self.recs["stc_temporal"][0], {
+			'ivoid': u'ivo://org.gavo.dc/gums/q/pub',
+			'time_start': 34308.50648148125,
+			'time_end': 37541.043090277817})
+		self.assertEqual(self.recs["stc_temporal"][1], {
+			'ivoid': u'ivo://org.gavo.dc/gums/q/pub',
+			'time_start': 56658.0,
+			'time_end': 59214.0})
+
+	def testAllSky(self):
+		moc = self.recs["stc_spatial"][0]["coverage"]
+		self.assertEqual(moc.asASCII(), "0/0-11")
+
+	def testShapes(self):
+		self.assertEqual(
+			self.siaprecs["stc_spatial"][0]["ivoid"],
+			'ivo://mast.stsci/siap/xmm-om')
+		self.assertEqual(
+			self.siaprecs["stc_spatial"][0]["coverage"].asASCII(),
+			"4/1082 5/4285-4287 4629 4672-4673 6/17115 17117-17119 "
+			"17137-17139 17290-17291 17294 17336 17338 18513 18515 18525 "
+			"18696-18697 18700 18704 6/")
+
+
+class NewSTCTest(testhelpers.VerboseTest):
+	resources = [("recs", _coneServiceRecords)]
+
+	def testMOCGiven(self):
+		mocrecs = self.recs["stc_spatial"]
+		self.assertEqual(len(mocrecs), 1)
+		self.assertEqual(
+			mocrecs[0]["coverage"].asSMoc(4).asASCII(),
+			'4/1297 1424 2376 2608')
+
+	def testSpectral(self):
+		sprecs = self.recs["stc_spectral"]
+		self.assertEqual(len(sprecs), 2)
+		self.assertAlmostEqual(sprecs[0]["spectral_start"], 3.4213e-19)
+		self.assertAlmostEqual(sprecs[0]["spectral_end"], 6.6328e-19)
+		self.assertAlmostEqual(sprecs[1]["spectral_start"], 7.4213e-18)
+		self.assertAlmostEqual(sprecs[1]["spectral_end"], 8.6328e-18)
+
+	def testTemporal(self):
+		trecs = self.recs["stc_temporal"]
+		self.assertEqual(len(trecs), 1)
+		self.assertAlmostEqual(trecs[0]["time_start"], 54894.5)
+		self.assertAlmostEqual(trecs[0]["time_end"], 54992.)
+
+
+class ErrorRecoveryTest(testhelpers.VerboseTest):
+	resources = [("recs", _standardsRecords)]
+
+	def testNoBrokenRecordTraces(self):
+		for r in itertools.chain(*self.recs.values()):
+			self.assertFalse(r["ivoid"]==
+				"ivo://ivoa.net/borken")
+
+	def testOtherRecordPresent(self):
+		self.assertEqual([r["res_type"] for r in self.recs["resource"]],
+			["vstd:standard", "vstd:servicestandard"])
+
+
+class DocumentsTest(testhelpers.VerboseTest, _DetailsTest):
+	resources = [("recs", _documentRecords)]
+
+	def testAllCapabilitiesPresent(self):
+		self.assertEqual(len(self.recs["capability"]), 3)
+	
+	def testTypes(self):
+		self.assertEqual(
+			set(r["cap_type"] for r in self.recs["capability"]),
+			set(["doc:edition"]))
+	
+	def testAllInterfacesPresent(self):
+		self.assertEqual(len(self.recs["interface"]), 4)
+	
+	def testRoles(self):
+		self.assertEqual(
+			[(r["cap_index"], r["intf_role"]) for r in self.recs["interface"]],
+			[(1, "rendered"), (1, "source"), (2, "rendered"), (3, "rendered")])
+
+	def testURLPresent(self):
+		self.assertEqual(self.recs["interface"][0]["access_url"],
+			'http://svn.ari.uni-heidelberg.de/svn/edu/trunk/aida_08_m1_distance'
+			'/en/en_aida_08_m1_distance.pdf')
+
+	def testLanguages(self):
+		self.assertEqual([(r["cap_index"], r["detail_value"])
+			for r in self.recs["res_detail"]
+			if r["detail_xpath"]=="/capability/languageCode"],
+			[(1, "en-us"), (2, "de-de"), (3, "es-es")])
+
+	def testTitles(self):
+		self.assertEqual([(r["cap_index"], r["detail_value"])
+			for r in self.recs["res_detail"]
+			if r["detail_xpath"]=="/capability/locTitle"], [
+				(1, "Distance of the Crab Nebula"),
+				(2, "Die Entfernung zum Krebsnebel"),
+				(3, "Distancia a la Nebulosa del Cancrejo")])
+
+	def testRelatedAltIdentifier(self):
+		self.assertEqual(
+			self.recs["relationship"][1]["related_alt_identifier"],
+			'ascl:1112.019')
+
+
+class StandardsTest(testhelpers.VerboseTest, _DetailsTest):
+	resources = [("recs", _standardRecords)]
+
+	def testType(self):
+		self.assertEqual(self.recs["resource"][0]["res_type"], "vstd:standard")
+	
+	def testId(self):
+		self.assertEqual(self.recs["resource"][0]["ivoid"],
+			"ivo://ivoa.net/std/standardsregext")
+
+	def testIdStripping(self):
+		self.assertEqual(self.recs["resource"][0]["ivoid"],
+			self.recs["oairecs"][0]["ivoid"])
+
+	def testSchema(self):
+		self.assertRecsHaveXPath("/schema/@namespace",
+			"http://www.ivoa.net/xml/standardsregext/v1.0", None)
+	
+	def testNoInterfaceOutOfCap(self):
+		self.assertFalse("interface" in self.recs)
+
+	def testNoParamsFromRottenInterface(self):
+		self.assertFalse("intf_param" in self.recs)
+
+	def testResDescription(self):
+		self.assertTrue(self.recs["resource"][0]["res_description"].startswith(
+			"This document describes an XML encoding standard for metadata"))
+
+
+class AltIdentifiersTest(testhelpers.VerboseTest):
+	resources = [("recs", _dataCollectionRecords)]
+
+	def _r(self, tuple):
+		return dict(zip(["ivoid", "alt_identifier"], tuple))
+
+	def testRecordAltIds(self):
+		self.assertTrue(
+			self._r(
+				('ivo://org.gavo.dc/gums/q/pub', 'doi:10.1016/j.epsl.2011.11.037'))
+				in self.recs["alt_identifier"])
+		self.assertTrue(
+			self._r(('ivo://org.gavo.dc/gums/q/pub', 'bibcode:2008ivoa.spec.0222P'))
+				in self.recs["alt_identifier"])
+
+	def testCreatorAltIds(self):
+		self.assertTrue(
+			self._r(('ivo://org.gavo.dc/gums/q/pub', 'orcid:000-0000-0000-000X'))
+				in self.recs["alt_identifier"])
+		self.assertTrue(
+			self._r(('ivo://org.gavo.dc/gums/q/pub', 'orcid:100-0000-0000-000X'))
+				in self.recs["alt_identifier"])
+
+
+class OAIRecsTest(testhelpers.VerboseTest):
+	resources = [("recs", _dataCollectionRecords)]
+
+	def testOAIRECSPopulated(self):
+		self.assertEqual(len(self.recs["oairecs"]), 1)
+		content = oaiclient._addCanonicalNSDecls(
+			self.recs["oairecs"][0]["oaixml"])
+		self.assertTrue('xmlns:someext="http://example.org/foo"' in content)
+
+		tree = testhelpers.getXMLTree(content.encode("utf-8"))
+		
+		self.assertEqual(
+			tree.xpath("header/identifier")[0].text,
+			"ivo://org.gavo.dc/gums/q/pub")
+		self.assertEqual(
+			len(tree.xpath("header/setSpec")),
+			0)
+		self.assertEqual(
+			tree.xpath("metadata/Resource/title")[0].text,
+			"The GAIA Universe Model Snapshot 10")
+
+
+class DaCHSColStatsTest(testhelpers.VerboseTest,
+		metaclass=testhelpers.SamplesBasedAutoTest):
+	# remove this when we drop g-colstat again.
+	resources = [("recs", _dataCollectionRecords)]
+
+	def testCardinality(self):
+		self.assertEqual(len(self.recs["g_num_stat"]), 1)
+
+	def _runTest(self, sample):
+		key, value = sample
+		expected = self.recs["g_num_stat"][0][key]
+		if isinstance(value, float):
+			self.assertAlmostEqual(value, expected)
+		else:
+			self.assertEqual(value, expected)
+	
+	samples = [
+		("fill_factor", 0.75),
+		("max_value", 0.000323686108),
+		("median", -2.6597222131385934e-06),
+		("min_value", -0.00161529717),
+		("percentile03", -8.126258479023819e-05),
+		("percentile97", 3.6843278503511085e-05),
+		("ivoid", "ivo://org.gavo.dc/gums/q/pub"),
+		("table_index", 1),
+		("name", "redshift"),
+	]
+
+
+if __name__=="__main__":
+	testhelpers.main(StandardsTest)

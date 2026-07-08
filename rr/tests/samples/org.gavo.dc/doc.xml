@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href='/static/xsl/oai.xsl' type='text/xsl'?>
+<oai:OAI-PMH xmlns:doc="http://www.ivoa.net/xml/DocRegExt/v1.0" xmlns:oai="http://www.openarchives.org/OAI/2.0/" xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0" xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/DocRegExt/v1.0 http://vo.ari.uni-heidelberg.de/docs/schemata/DocRegExt-v1.0.xsd http://www.openarchives.org/OAI/2.0/ http://vo.ari.uni-heidelberg.de/docs/schemata/OAI-PMH.xsd http://www.ivoa.net/xml/RegistryInterface/v1.0 http://vo.ari.uni-heidelberg.de/docs/schemata/RegistryInterface-v1.0.xsd http://www.ivoa.net/xml/VOResource/v1.0 http://vo.ari.uni-heidelberg.de/docs/schemata/VOResource-v1.0.xsd">
+  <oai:responseDate>2016-05-31T15:54:21Z</oai:responseDate>
+  <oai:request metadataPrefix="ivo_vor" verb="GetRecord"/>
+  <oai:GetRecord>
+    <oai:record>
+      <oai:header>
+        <oai:identifier>ivo://edu.gavo.org/gavo_aladincalib</oai:identifier>
+        <oai:datestamp>2014-09-24T08:20:41Z</oai:datestamp>
+        <oai:setSpec>ivo_managed</oai:setSpec>
+      </oai:header>
+      <oai:metadata>
+<vr:Resource
+  created="2014-02-06T13:23:00Z"
+  status="active"
+  updated="2014-02-06T14:15:41"
+  xsi:type="doc:Document"
+  xmlns:vr="http://www.ivoa.net/xml/VOResource/v1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:doc="http://www.ivoa.net/xml/DocRegExt/v1.0">
+  <title>Distance to the Crab Nebula</title>
+  <identifier>ivo://aida/tutorials/08_m1_distance</identifier>
+  <curation>
+            <publisher>Euro VO</publisher>
+            <creator>
+              <name>Gaia Collaboration</name>
+            </creator>
+            <date role="updated">2014-09-24T08:20:41</date>
+            <contact>
+              <name>GAVO Data Center Team</name>
+              <address>M&#xF6;nchhofstrasse 12-14, D-69120 Heidelberg</address>
+              <email>gavo@ari.uni-heidelberg.de</email>
+              <telephone>++49 6221 54 1837</telephone>
+            </contact>
+  </curation>
+  <content>
+    <subject>Virtual observatory</subject>
+    <subject>Tutorials</subject>
+    <subject>Supernovae</subject>
+    <subject>Nebulae</subject>
+    <description> In this tutorial, the students measure the
+    distance of the Crab nebula (M1) by using Aladin to compute
+    angular and linear dimensions.</description>
+    <referenceURL>http://wwwas.oats.inaf.it/aidawp5/eng_download.html</referenceURL>
+    <relationship>
+      <relationshipType>Cites</relationshipType>
+      <relatedResource ivo-id="ivo://CDS/aladin"
+        >The ALADIN image server</relatedResource>
+      <relatedResource altIdentifier="ascl:1112.019">Aladin</relatedResource>
+    </relationship>
+  </content>
+
+  <capability xsi:type="doc:Edition">
+    <languageCode>en-us</languageCode>
+    <locTitle>Distance of the Crab Nebula</locTitle>
+    <interface role="rendered">
+      <accessURL>http://svn.ari.uni-heidelberg.de/svn/edu/trunk/aida_08_m1_distance/en/en_aida_08_m1_distance.pdf</accessURL>
+    </interface>
+    <interface role="source">
+      <accessURL>http://svn.ari.uni-heidelberg.de/svn/edu/trunk/aida_08_m1_distance/en/en_aida_08_m1_distance.doc</accessURL>
+    </interface>
+  </capability>
+
+  <capability xsi:type="doc:Edition">
+    <languageCode>de-de</languageCode>
+    <locTitle>Die Entfernung zum Krebsnebel</locTitle>
+    <interface role="rendered">
+      <accessURL>http://svn.ari.uni-heidelberg.de/svn/edu/trunk/aida_08_m1_distance/de/de_aida_08_m1_distance.pdf</accessURL>
+    </interface>
+    <!-- source lost -->
+  </capability>
+
+  <capability xsi:type="doc:Edition">
+    <languageCode>es-es</languageCode>
+    <locTitle>Distancia a la Nebulosa del Cancrejo</locTitle>
+    <interface role="rendered">
+      <accessURL>http://svn.ari.uni-heidelberg.de/svn/edu/trunk/aida_08_m1_distance/es/es_aida_08_m1_distance.pdf</accessURL>
+    </interface>
+    <!-- Ouch: another lost source -->
+  </capability>
+
+</vr:Resource>
+      </oai:metadata>
+    </oai:record>
+  </oai:GetRecord>
+</oai:OAI-PMH>
