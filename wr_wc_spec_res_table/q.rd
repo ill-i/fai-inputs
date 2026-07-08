@@ -1347,16 +1347,16 @@
 
 			<condDesc>
 				<inputKey name="name" type="text"
-									ucd="meta.id;src"
-									description="Search by object name or alternative name."/>
+					ucd="meta.id;src"
+					description="Search by object name or alternative name."/>
 				<phraseMaker>
 					<code>
-val = inPars.get("name")
-if not val:
-	return
-key1 = base.getSQLKey("object", "%" + val.replace(" ", "") + "%", outPars)
-key2 = base.getSQLKey("alt_name", "%" + val.replace(" ", "") + "%", outPars)
-yield "(UPPER(REPLACE(object, ' ', '')) LIKE UPPER(%%(%s)s) OR UPPER(REPLACE(alt_name, ' ', '')) LIKE UPPER(%%(%s)s))" % (key1, key2)
+            val = inPars.get("name")
+            if not val:
+              return
+            key1 = base.getSQLKey("object", "%" + val.replace(" ", "") + "%", outPars)
+            key2 = base.getSQLKey("alt_name", "%" + val.replace(" ", "") + "%", outPars)
+            yield "(UPPER(REPLACE(object, ' ', '')) LIKE UPPER(%%(%s)s) OR UPPER(REPLACE(alt_name, ' ', '')) LIKE UPPER(%%(%s)s))" % (key1, key2)
 					</code>
 				</phraseMaker>
 			</condDesc>
@@ -1367,11 +1367,11 @@ yield "(UPPER(REPLACE(object, ' ', '')) LIKE UPPER(%%(%s)s) OR UPPER(REPLACE(alt
 									description="Filter by spectral subtype (e.g., WN4, WN7)."/>
 				<phraseMaker>
 					<code>
-val = inPars.get("sp")
-if not val:
-	return
-key = base.getSQLKey("sp", "%" + val.strip().upper() + "%", outPars)
-yield "UPPER(sp) LIKE %%(%s)s" % key
+            val = inPars.get("sp")
+            if not val:
+              return
+            key = base.getSQLKey("sp", "%" + val.strip().upper() + "%", outPars)
+            yield "UPPER(sp) LIKE %%(%s)s" % key
 					</code>
 				</phraseMaker>
 			</condDesc>

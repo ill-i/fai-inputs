@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!-- ==SETUP== check why in description and in the article 82 source but in the
+table 81 only-->
 <resource schema="pulsars" resdir=".">
 	<meta name="title">Galactic X-ray Pulsars</meta>
 	<meta name="creationDate">2024-11-25T12:00:00Z</meta>
@@ -746,6 +747,16 @@
 		<updater spaceTable="main" mocOrder="6"/>
 	</coverage>
 
+  <service id="web" allowed="form">
+    <meta name="shortName">\schema Web Portal</meta>
+    <dbCore queriedTable="main">
+      <condDesc buildFrom="Name"/>
+      <condDesc original="//scs#humanInput"/>
+      <condDesc buildFrom="Ps"/>
+      <condDesc buildFrom="POrbLower"/>
+    </dbCore>
+  </service>
+
 	<!-- Service Definition -->
 	<service id="scs" allowed="form,scs.xml">
 		<meta name="shortName">FAI xray pulsars</meta>
@@ -755,13 +766,22 @@
 		</meta>
 		<scsCore queriedTable="main">
 			<FEED source="//scs#coreDescs"/>
-			<condDesc buildFrom="Ps"/>
 		</scsCore>
 		<!-- Publishing Information -->
-		<publish sets="local,ivo_managed" render="form"/>
 		<publish sets="ivo_managed" render="scs.xml"/>
+		<publish sets="local,ivo_managed" render="form" service="web"/>
 	</service>
-</resource>
-<!--==SETUP== add regtest into pulsars q.rd-->	   
-<!-- vi:ai:sta:ts=4:sw=4 
--->
+  
+  <regSuite title="pulsars regression">
+    <regTest title="Test TAP ">
+     <url parSet="TAP"
+     QUERY="SELECT * from pulsars.main 
+     WHERE Name='SAX J1324.4-6200'"
+     >/tap/sync</url>
+     <code>
+     row=self.getFirstVOTableRow()
+     self.assertAlmostEqual(row['Ps'],172.86)
+     </code>
+    </regTest>
+  </regSuite>
+</resource> 
