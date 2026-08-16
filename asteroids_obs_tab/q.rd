@@ -27,7 +27,7 @@
   </meta> 
   <meta name="subject">asteroids</meta>
   <meta name="subject">small-solar-system-bodies</meta>
-  <meta name="subject">observation-log</meta>
+  <meta name="subject">observational-astronomy</meta>
 
   <meta name="creator">Fesenkov Astrophysical Institute</meta>
   <meta name="instrument">Zeiss-1000 (east)</meta>
@@ -51,7 +51,7 @@
 
   <table id="main" onDisk="True" adql="True">
     <column name="obs_date"
-      type="date" ucd="time.date;obs"
+      type="date" ucd="time.epoch;obs"
 			required="True"
       tablehead="Obs Date"
       description="Observation date (ISO format DD-MM-YYYY)"
@@ -63,13 +63,13 @@
       description="Asteroid designation or provisional ID"
       verbLevel="1"/>
     <column name="bin"
-      type="integer" ucd="instr.detector.bin"
+      type="integer" ucd="instr.setup"
 			required="True"
       tablehead="Bin"
       description="Detector binning"
       verbLevel="5"/>
     <column name="filter"
-      type="text" ucd="instr.filter"
+      type="text" ucd="meta.id;instr.filter"
 			required="True"
       tablehead="Filter"
       description="Filter used during observation"
@@ -138,11 +138,14 @@
 
   <regSuite title="asteroids_obs_tab regression">
     <regTest title="basic data check">
-      <url parSet="TAP" QUERY="SELECT * FROM asteroids_obs_tab.main LIMIT 1">/tap/sync</url>
+      <url parSet="TAP"
+        QUERY="SELECT * FROM asteroids_obs_tab.main 
+        WHERE target='145439'">/tap/sync</url>
       <code>
-        row = self.getFirstVOTableRow()
-        print(row)
-        self.assertTrue("target" in row)
+        rows = self.getVOTableRows()
+        row = rows[0]
+        self.assertEqual(row["bin"],3)
+        self.assertEqual(row["nframes"],21)
       </code>
     </regTest>
   </regSuite>
