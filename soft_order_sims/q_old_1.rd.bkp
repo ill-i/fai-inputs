@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resource schema="orders" resdir=".">
+
+  <meta name="title">Order observational and computational resources at FAI</meta>
+  <meta name="shortName">vo-kz-uws</meta>
+  <meta name="creationDate">2024-11-14T12:02:00Z</meta>
+  <meta name="description">
+     Via this service, it is possible to order observations with FAI telescopes and computations with FAI computer cluster.
+     The base URL for the UWS service: https://vo.fai.kz:8008.
+  </meta>
+  <meta name="subject">astronomical-instrumentation</meta>
+  <meta name="subject">computational-astronomy</meta>
+  <meta name="subject">gpu-computing</meta>
+  <meta name="subject">automated-telescopes</meta>
+  <meta name="subject">optical-telescopes</meta>
+  <meta name="content.type">Other</meta>
+
+  <service id="uwsService" allowed="form,uws.xml">
+    <meta name="serviceType">uws</meta>
+    <meta name="shortName">uws-service</meta>
+    <nullCore />
+   <!-- <publish sets="local,ivo_managed" render="form"/>-->
+  </service>
+</resource>

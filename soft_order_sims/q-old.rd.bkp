@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resource schema="orders" resdir=".">
+    <meta name="title">Resource Ordering Service</meta>
+    <meta name="description" format="plain">
+        This service allows users to order computational or observational resources via the Virtual Observatory.
+    </meta>
+    <meta name="subject">resource ordering</meta>
+    <meta name="type">service</meta>
+
+    <!-- Service Definition -->
+    <service id="order" allowed="uws">
+        <meta name="shortName">OrderService</meta>
+        <meta name="serviceType">async</meta>
+
+        <!-- Input Parameters -->
+        <inputTable>
+            <inputKey name="RESOURCE_TYPE" type="text" ui="select" required="true"
+                description="Type of resource to order">
+                <values>
+                    <value key="computational" />
+                    <value key="observational" />
+                </values>
+            </inputKey>
+            <inputKey name="DURATION" type="double" required="true"
+                description="Requested duration in hours" />
+            <inputKey name="PRIORITY" type="text" ui="select"
+                description="Priority of the request">
+                <values>
+                    <value key="normal" />
+                    <value key="high" />
+                </values>
+                <default>normal</default>
+            </inputKey>
+            <!-- Add more input parameters as needed -->
+        </inputTable>
+
+        <!-- Custom UWS Job Core -->
+        <customUWSJobCore module="res/ordercore"/>
+        
+        <!-- Publishing Information -->
+        <publish render="uws"/>
+    </service>
+</resource>
